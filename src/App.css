@@ -1,38 +1,87 @@
-.App {
-  text-align: center;
+@font-face {
+  font-family: 'Free Sans', sans-serif;
+  font-weight:normal;
+  src:url('./assets/fonts/FreeSans.otf')
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@font-face {
+  font-family: 'Free Sans', sans-serif;
+  font-weight:bold;
+  src:url('./assets/fonts/FreeSansBold.otf')
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+:root {
+  --light-grey: #f8f8f8;
+
+  --wide-container: 1400px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+* {
+  margin:0;
+  padding:0;
+  font-family:'Free Sans', sans-serif;
 }
 
-.App-link {
-  color: #61dafb;
+body {
+  background:var(--light-grey);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.header {
+  width:100%;
+  border-style:none none solid none;
+  border-width:1px;
+  border-color:#eee;
+  height:100px;
+  background:white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.01);
+  /* background: hsla(0,0%,100%,.425);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgb(0 0 0 / 1%); */
+}
+
+.header .header-inner {
+  width:var(--wide-container);
+  margin:0 auto;
+  display:flex;
+  height:100%;
+}
+
+.header-inner .logo {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  letter-spacing:-2.5px;
+  font-size:33px;
+  height:100%;
+}
+
+.header-inner .navigation {
+  width:100%;
+  box-sizing: border-box;
+  padding-left:50px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+}
+
+.navigation .nav-link {
+  text-decoration:none;
+  color:black;
+  font-size:15px;
+  font-weight:bold;
+  box-sizing: border-box;
+  padding:13px 17px;
+  margin-left:20px;
+  transition:0.2s all cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.navigation .nav-link:hover {
+  background:#eee;
+}
+
+.navigation .nav-link.member {
+  background:black;
+  color:white; 
 }
