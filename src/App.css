@@ -12,6 +12,9 @@
 
 :root {
   --light-grey: #f8f8f8;
+  --dark: #222;
+
+  --colour-accent: rgb(62, 124, 206);
 
   --wide-container: 1400px;
 }
@@ -73,7 +76,7 @@ body {
   font-weight:bold;
   box-sizing: border-box;
   padding:13px 17px;
-  margin-left:20px;
+  margin-left:10px;
   transition:0.2s all cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
@@ -84,4 +87,22 @@ body {
 .navigation .nav-link.member {
   background:black;
   color:white; 
+}
+
+.main {
+  width:100%;
+}
+
+.main .impact {
+  min-height:500px;
+  background:var(--dark);
+}
+
+.impact .impact-inner {
+  width:var(--wide-container);
+  margin:0 auto;
+}
+
+.impact-inner h1 {
+  color:white;
 }

@@ -11,6 +11,8 @@ const Navigation = () => {
                     OpenGavel
                 </div>
                 <div className='navigation'>
+                    <NavLink className='nav-link' to="login">Features</NavLink>
+                    <NavLink className='nav-link' to="login">Support</NavLink>
                     <NavLink className='nav-link' to="login">Demo Program</NavLink>
                     <NavLink className='nav-link member' activeClassName='active' to="login">Login</NavLink>
                     <NavLink className='nav-link member' to="register">Register</NavLink>
