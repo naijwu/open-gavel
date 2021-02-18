@@ -10,7 +10,7 @@ const Main = () => {
             <div className='main'>
                 <div className='impact'>
                     <div className='impact-inner'>
-                        <h1>Main page</h1>
+                        [photos of the application]
                     </div>
                 </div>
                 <div>

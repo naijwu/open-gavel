@@ -6,6 +6,9 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Main from './Main';
 import Login from './Login';
 import Register from './Register';
+import Support from './Support';
+import Features from './Features';
+import Demo from './Demo';
 import Dashboard from './Dashboard';
 
 function App() {
@@ -31,8 +34,12 @@ function App() {
     <AuthProvider>
       <Switch>
         <Route exact path='/' component={Main} />
+        <Route exact path='/features' component={Features} />
+        <Route exact path='/support' component={Support} />
+        <Route exact path='/demo' component={Demo} />
         <Route exact path='/login' component={Login} />
         <Route exact path='/register' component={Register} />
+
         <AuthRoute exact path='/dashboard/' component={Dashboard} />
       </Switch>
     </AuthProvider>

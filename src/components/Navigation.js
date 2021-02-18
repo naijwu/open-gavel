@@ -8,13 +8,15 @@ const Navigation = () => {
         <div className='header'>
             <div className='header-inner'>
                 <div className='logo'>
-                    OpenGavel
+                    <a className='logo-link' href='/'>
+                        OpenGavel
+                    </a>
                 </div>
                 <div className='navigation'>
-                    <NavLink className='nav-link' to="login">Features</NavLink>
-                    <NavLink className='nav-link' to="login">Support</NavLink>
-                    <NavLink className='nav-link' to="login">Demo Program</NavLink>
-                    <NavLink className='nav-link member' activeClassName='active' to="login">Login</NavLink>
+                    <NavLink className='nav-link' activeClassName='active'  to="features">Features</NavLink>
+                    <NavLink className='nav-link' to="support">Support</NavLink>
+                    <NavLink className='nav-link' to="demo">Demo Program</NavLink>
+                    <NavLink className='nav-link member' to="login">Login</NavLink>
                     <NavLink className='nav-link member' to="register">Register</NavLink>
                 </div>
             </div>
