@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, NavLink, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, NavLink, Link, Redirect } from 'react-router-dom';
 
 const Navigation = () => {
 
@@ -8,14 +8,13 @@ const Navigation = () => {
         <div className='header'>
             <div className='header-inner'>
                 <div className='logo'>
-                    <a className='logo-link' href='/'>
+                    <Link className='logo-link' to='/'>
                         OpenGavel
-                    </a>
+                    </Link>
                 </div>
                 <div className='navigation'>
-                    <NavLink className='nav-link' activeClassName='active'  to="features">Features</NavLink>
+                    <NavLink className='nav-link' activeClassName='active' to="demo">View Demo</NavLink>
                     <NavLink className='nav-link' to="support">Support</NavLink>
-                    <NavLink className='nav-link' to="demo">Demo Program</NavLink>
                     <NavLink className='nav-link member' to="login">Login</NavLink>
                     <NavLink className='nav-link member' to="register">Register</NavLink>
                 </div>

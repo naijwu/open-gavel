@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from './contexts/AuthContext';
 import { Link, useHistory } from 'react-router-dom';
 import { database } from './firebase';
+import Navigation from './components/Navigation';
 
 export default function Register() {
 
@@ -57,47 +58,50 @@ export default function Register() {
 
     return (
         <>
-            <div className='account-component'>
-                <h1>Register</h1>
-                {error && (
-                    <div className='error-alert'>
-                        {error}
+            <Navigation />
+            <div className='main'>
+                <div className='action-container'>
+                    <div className='login'>
+                        <div className='login-inner'>
+                            <h1>Register</h1>
+                            {error && (
+                                <div className='error-alert'>
+                                    {error}
+                                </div>
+                            )}
+                            <div className='input-group'>
+                                <h3>Full Name</h3>
+                                <input type="text" value={name} onChange={e=>setName(e.target.value)} />
+                            </div>
+                            <div className='input-group'>
+                                <h3>Conference Name</h3>
+                                <input type="text" value={conference} onChange={e=>setConference(e.target.value)} />
+                            </div>
+                            <div className='input-group'>
+                                <h3>Email</h3>
+                                <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
+                            </div>
+                            <div className='input-group'>
+                                <h3>Password</h3>
+                                <input type="text" value={password} onChange={e=>setPassword(e.target.value)} />
+                            </div>
+                            <div className='input-group'>
+                                <h3>Confirm Password</h3>
+                                <input type="text" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} />
+                            </div>
+                            <div className='text-tray'>
+                                Please note that this registration page is designated for conference Secretariat members. <br /><br />
+                                <Link className='text-link' to='/login' >
+                                    Login Instead
+                                </Link>
+                            </div>
+                            <div className='input-group'>
+                                <input disabled={loading} onClick={handleSubmit} type="submit" value="Register" />
+                            </div>
+                        </div>
                     </div>
-                )}
-                <div className='input-group'>
-                    <h3>Full Name</h3>
-                    <input type="text" value={name} onChange={e=>setName(e.target.value)} />
                 </div>
-                <div className='input-group'>
-                    <h3>Conference Name</h3>
-                    <input type="text" value={conference} onChange={e=>setConference(e.target.value)} />
-                </div>
-                <div className='input-group'>
-                    <h3>Email</h3>
-                    <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
-                </div>
-                <div className='input-group'>
-                    <h3>Password</h3>
-                    <input type="text" value={password} onChange={e=>setPassword(e.target.value)} />
-                </div>
-                <div className='input-group'>
-                    <h3>Confirm Password</h3>
-                    <input type="text" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} />
-                </div>
-                <div className='text-tray'>
-                    <Link className='text-link' to='/app/login' >
-                        Login Instead
-                    </Link>
-                </div>
-                <div className='input-group'>
-                    <input disabled={loading} onClick={handleSubmit} type="submit" value="Register" />
-                </div>
-            </div>
-            <div className='account-component-back'>
-                <Link className='text-link back' to='/' >
-                    Return Home
-                </Link>
             </div>
         </>
-    )
+    );
 }

@@ -22,6 +22,10 @@ export function AuthProvider({ children }) {
         return auth.signInWithEmailAndPassword(email, password);
     }
 
+    function loginStaff(email, password) {
+        return null;
+    }
+
     function loginUsingGoogle() {
         return auth.signInWithPopup(provider);
     }
@@ -63,6 +67,8 @@ export function AuthProvider({ children }) {
         updateEmail,
         updatePassword,
         loginUsingGoogle,
+
+        loginStaff,
     }
 
     return (
