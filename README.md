@@ -1,4 +1,10 @@
-# Getting Started with Create React App
+# OpenGavel
+
+OpenGavel is a free chairing program for Model UN conferences. The whole system is currently a work in progress.
+
+Link: https://opengavel.app
+
+# Create React App commands...
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
