@@ -111,6 +111,21 @@ body {
   color:black; 
 }
 
+.navigation button.nav-link.member {
+  border:none;
+  cursor:pointer;
+  outline:none;
+}
+
+.navigation .nav-link.member.colour {
+  background:var(--neon-green)
+}
+
+.navigation .nav-link.member.colour:hover {
+  background:var(--neon-green-dark);
+  color:black;
+}
+
 .navigation .nav-link.member.active,
 .navigation .nav-link.member:hover {
   background:var(--dark);
