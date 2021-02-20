@@ -325,3 +325,15 @@ body {
 .input-group input[type="submit"]:hover {
   background:var(--neon-green-dark);
 }
+
+
+
+
+
+/* Experiment styles */
+
+.demo-main {
+  padding-top:100px;
+  margin:0 auto;
+  width:var(--wide-container);
+}

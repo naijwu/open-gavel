@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider, useFirebaseAuth } from './contexts/AuthContextFirebase';
 
 import Main from './Main';
 import Login from './Login';
@@ -10,11 +10,13 @@ import Register from './Register';
 import Support from './Support';
 import Demo from './Demo';
 import Dashboard from './Dashboard';
+import Chair from './Chair';
+import Profile from './Profile';
 
 function App() {
   
   function AuthRoute({ component: Component, ...rest }) {
-    const { currentUser } = useAuth();
+    const { currentUser } = useFirebaseAuth();
 
     return (
       <Route
@@ -40,7 +42,9 @@ function App() {
         <Route exact path='/login/password-reset' component={ForgotPass} />
         <Route exact path='/register' component={Register} />
 
-        <AuthRoute exact path='/dashboard/' component={Dashboard} />
+        <AuthRoute exact path='/chair' component={Chair} />
+        <AuthRoute exact path='/dashboard' component={Dashboard} />
+        <AuthRoute exact path='/profile' component={Profile} />
       </Switch>
     </AuthProvider>
   );

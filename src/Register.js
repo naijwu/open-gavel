@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from './contexts/AuthContext';
+import { useFirebaseAuth } from './contexts/AuthContextFirebase';
 import { Link, useHistory } from 'react-router-dom';
 import { database } from './firebase';
 import Navigation from './components/Navigation';
@@ -17,7 +17,7 @@ export default function Register() {
 
     const history = useHistory();
 
-    const { register, currentUser } = useAuth();
+    const { register, currentUser } = useFirebaseAuth();
 
     async function handleSubmit(e) {
         e.preventDefault();

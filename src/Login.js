@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from './contexts/AuthContext';
+import { useFirebaseAuth } from './contexts/AuthContextFirebase';
 import { Link, useHistory } from 'react-router-dom';
 import Navigation from './components/Navigation';
 
@@ -19,7 +19,7 @@ export default function Login() {
 
     const [loading, setLoading] = useState(false);
 
-    const { login } = useAuth();
+    const { login } = useFirebaseAuth();
 
     const history = useHistory();
 
@@ -30,7 +30,7 @@ export default function Login() {
             setError('')
             setLoading(true);
             await login(email, password);
-            history.push('/chair');
+            history.push('/dashboard');
         } catch {
             setError('Failed to log in.');
         }

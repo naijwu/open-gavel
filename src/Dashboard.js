@@ -4,7 +4,7 @@ const Dashboard = () => {
 
     return (
         <div>
-            members only area
+            Sec members only area
         </div>
     )
 

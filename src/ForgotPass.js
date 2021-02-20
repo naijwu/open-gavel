@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from './contexts/AuthContext';
+import { useFirebaseAuth } from './contexts/AuthContextFirebase';
 import { Link } from 'react-router-dom';
 import Navigation from './components/Navigation';
 
@@ -11,7 +11,7 @@ export default function ForgotPass() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
-    const { resetPassword } = useAuth();
+    const { resetPassword } = useFirebaseAuth();
 
     async function handleSubmit(e) {
         e.preventDefault();
