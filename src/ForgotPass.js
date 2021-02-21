@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useFirebaseAuth } from './contexts/AuthContextFirebase';
 import { Link } from 'react-router-dom';
 import Navigation from './components/Navigation';
 
@@ -11,22 +10,10 @@ export default function ForgotPass() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
-    const { resetPassword } = useFirebaseAuth();
 
     async function handleSubmit(e) {
         e.preventDefault();
 
-        try {
-            setMessage('');
-            setError('')
-            setLoading(true);
-            await resetPassword(email);
-            setMessage('Check inbox for further instructions.');
-        } catch {
-            setError('Failed to reset password.');
-        }
-
-        setLoading(false);
     }
 
     
@@ -53,7 +40,7 @@ export default function ForgotPass() {
                                 <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
                             </div>
                             <div className='text-tray'>
-                                <Link className='text-link' to='/app/login' >
+                                <Link className='text-link' to='/login' >
                                     Go to login
                                 </Link>
                             </div>

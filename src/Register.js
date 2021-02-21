@@ -1,59 +1,68 @@
-import React, { useState } from 'react';
-import { useFirebaseAuth } from './contexts/AuthContextFirebase';
-import { Link, useHistory } from 'react-router-dom';
-import { database } from './firebase';
+import React, { useContext, useState } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Navigation from './components/Navigation';
+
+// TODO: Put all authentication related files into one place - API_URL should only be called once
+import { API_URL } from './config.js';
+import { useAuthContext } from './authentication/AuthContext';
 
 export default function Register() {
 
-    const [name, setName] = useState('');
+    const { currentUser } = useAuthContext();
+
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [conference, setConference] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const history = useHistory();
 
-    const { register, currentUser } = useFirebaseAuth();
+    // TODO: More robust and UI-friendly form feedback
+    function isValid() {
 
-    async function handleSubmit(e) {
+        if (firstName === '' || lastName === '' || conference === '' || email === '' || password == '') return false;
+
+        return true;
+    }
+
+    function handleSubmit(e) {
         e.preventDefault();
 
+        setLoading(true);
+        setError('');
+        
+        if(!(isValid())) {
+            setLoading(false);
+            return setError("Inappropriate input values given.")
+        };
+
         if(!(password === confirmPassword)) {
-            return setError("Passwords do not match");
-        }
+            setLoading(false);
+            return setError("Passwords do not match.")
+        };
+        
 
-        try {
-            setError('')
-            setLoading(true);
-            let registeredUser = await register(email, password);
-
-            if(registeredUser.user) {
-
-                // create document with the account's UUID under users collection
-                // TODO: Insecure, maybe have a verification process via email
-                database.collection("users").doc(registeredUser.user.uid).set({
-                    full_name: name,
-                    conference: conference,
-                })
-                .then(function() {
-                    console.log("Document successfully written!");
-                })
-                .catch(function(error) {
-                    console.error("Error writing document: ", error);
-                });
-            }
-
-
-            history.push('/login')
-        } catch {
-            setError('Failed to create an account');
-        }
-
-        setLoading(false);
+        axios.post(`${API_URL}/authentication/secretariat/register`, {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            conference: conference
+        })
+        .then(function (response) {
+            setError('');
+            setSuccess(JSON.stringify(response));
+        })
+        .catch(function (error) {
+            setSuccess('');
+            setError(JSON.stringify(error));
+        });
     }
 
     return (
@@ -64,17 +73,16 @@ export default function Register() {
                     <div className='login'>
                         <div className='login-inner'>
                             <h1>Register</h1>
-                            {error && (
-                                <div className='error-alert'>
-                                    {error}
-                                </div>
-                            )}
                             <div className='input-group'>
-                                <h3>Full Name</h3>
-                                <input type="text" value={name} onChange={e=>setName(e.target.value)} />
+                                <h3>First Name</h3>
+                                <input type="text" value={firstName} onChange={e=>setFirstName(e.target.value)} />
                             </div>
                             <div className='input-group'>
-                                <h3>Conference Name</h3>
+                                <h3>Last Name</h3>
+                                <input type="text" value={lastName} onChange={e=>setLastName(e.target.value)} />
+                            </div>
+                            <div className='input-group'>
+                                <h3>Name of Conference</h3>
                                 <input type="text" value={conference} onChange={e=>setConference(e.target.value)} />
                             </div>
                             <div className='input-group'>
@@ -96,8 +104,18 @@ export default function Register() {
                                 </Link>
                             </div>
                             <div className='input-group'>
-                                <input disabled={loading} onClick={handleSubmit} type="submit" value="Register" />
+                                <input className={`isdisabled${loading}`} disabled={loading} onClick={handleSubmit} type="submit" value="Register" />
                             </div>
+                            {error && (
+                                <div className='error-alert'>
+                                    {error}
+                                </div>
+                            )}
+                            {success && (
+                                <div className='success-alert'>
+                                    {success}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

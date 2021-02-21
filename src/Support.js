@@ -1,4 +1,5 @@
 import React from 'react';
+import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 
 const Support = () => {
@@ -7,8 +8,9 @@ const Support = () => {
         <div className='support'>
             <Navigation />
             <div className="main">
-                Support
+                Support: Contact, FAQ
             </div>
+            <Footer />
         </div>
     )
 }

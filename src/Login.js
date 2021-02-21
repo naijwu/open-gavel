@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useFirebaseAuth } from './contexts/AuthContextFirebase';
+import axios from 'axios';
 import { Link, useHistory } from 'react-router-dom';
 import Navigation from './components/Navigation';
 
+import { API_URL } from './config.js';
+import { useAuthContext } from './authentication/AuthContext';
+
 export default function Login() {
+
+    const { updateCurrentUser } = useAuthContext();
 
     const [userRole, setUserRole] = useState('');
 
     // Secretariat Login hooks
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [secPassword, setSecPassword] = useState('');
+    const [secError, setSecError] = useState('');
     
     // Staff Login hooks
     const [username, setUsername] = useState('');
@@ -19,21 +24,25 @@ export default function Login() {
 
     const [loading, setLoading] = useState(false);
 
-    const { login } = useFirebaseAuth();
-
     const history = useHistory();
 
-    async function handleSubmit(e) {
+    function handleSubmit(e) {
         e.preventDefault();
 
-        try {
-            setError('')
-            setLoading(true);
-            await login(email, password);
-            history.push('/dashboard');
-        } catch {
-            setError('Failed to log in.');
-        }
+        axios.post(`${API_URL}/authentication/secretariat/login`, {
+            email: email,
+            password: secPassword,
+        })
+        .then(function (response) {
+
+            updateCurrentUser(response.data);
+            setSecError('success');
+            
+            history.push('/secretariat/dashboard')
+        })
+        .catch(function (error) {
+            setSecError(JSON.stringify(error));
+        });
 
         setLoading(false);
     }
@@ -66,9 +75,9 @@ export default function Login() {
                         <div className='login'>
                             <div className='login-inner'>
                                 <h1>Secretariat Login</h1>
-                                {error && (
+                                {secError && (
                                     <div className='error-alert'>
-                                        {error}
+                                        {secError}
                                     </div>
                                 )}
                                 <div className='input-group'>
@@ -77,7 +86,7 @@ export default function Login() {
                                 </div>
                                 <div className='input-group'>
                                     <h3>Password</h3>
-                                    <input type="text" value={password} onChange={e=>setPassword(e.target.value)} />
+                                    <input type="text" value={secPassword} onChange={e=>setSecPassword(e.target.value)} />
                                 </div>
                                 <div className='text-tray'>
                                     <Link className='text-link' to='/login/password-reset' >
