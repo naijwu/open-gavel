@@ -26,7 +26,7 @@ const Navigation = () => {
                 </div>
                 <div className='navigation'>
                     {(currentUser) ? '' : (
-                        <NavLink className='nav-link' activeClassName='active' to="demo">View Demo</NavLink>
+                        // <NavLink className='nav-link' activeClassName='active' to="demo">View Demo</NavLink>
                     )}
                     {(currentUser) ? (
                         // need further splitting based on role (staff vs secretariat)
