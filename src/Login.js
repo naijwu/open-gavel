@@ -5,10 +5,11 @@ import Navigation from './components/Navigation';
 
 import { API_URL } from './config.js';
 import { useAuthContext } from './authentication/AuthContext';
+import Footer from './components/Footer';
 
 export default function Login() {
 
-    const { updateCurrentUser } = useAuthContext();
+    const { currentUser, updateCurrentUser } = useAuthContext();
 
     const [userRole, setUserRole] = useState('');
 
@@ -36,25 +37,45 @@ export default function Login() {
         .then(function (response) {
 
             updateCurrentUser(response.data);
-            setSecError('success');
             
             history.push('/secretariat/dashboard')
         })
         .catch(function (error) {
-            setSecError(JSON.stringify(error));
+            setSecError(error.message);
         });
 
         setLoading(false);
     }
     
-    async function handleSubmitStaff(e) {
+    function handleSubmitStaff(e) {
+        e.preventDefault();
 
-        // call database instead i suppose...
+        let sanitizedUser = username.replace(/\s/g, '');
 
+        let splitUser = sanitizedUser.substring(0, sanitizedUser.indexOf('@'));
+        let splitConference = sanitizedUser.substr(sanitizedUser.indexOf('@') + 1);
+        
+
+        let postBody = {
+            username: splitUser,
+            conference: splitConference,
+            password: staffPassword,
+        }
+
+        axios.post(`${API_URL}/authentication/staff/login`, postBody)
+        .then(function (response) {
+
+            updateCurrentUser(response.data);
+            
+            history.push('/committee/dashboard')
+        })
+        .catch(function (error) {
+            setStaffError(error.message);
+        });
     }
 
 
-    return (
+    return (!currentUser) ? (
         <>
             <Navigation />
             <div className='main'>
@@ -89,9 +110,9 @@ export default function Login() {
                                     <input type="text" value={secPassword} onChange={e=>setSecPassword(e.target.value)} />
                                 </div>
                                 <div className='text-tray'>
-                                    <Link className='text-link' to='/login/password-reset' >
+                                    {/* <Link className='text-link' to='/login/password-reset' >
                                         Forgot password
-                                    </Link>
+                                    </Link> */}
                                     <Link className='text-link' to='/register' >
                                         Register instead
                                     </Link>
@@ -135,6 +156,16 @@ export default function Login() {
                     )}
                 </div>
             </div>
+        </>
+    ) : (
+        <>
+            <Navigation />
+            <div className='main'>
+                <div className='container'>
+                    You're already logged in.
+                </div>
+            </div>
+            <Footer />
         </>
     )
 }

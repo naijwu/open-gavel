@@ -2,7 +2,6 @@ import React from 'react';
 import jwt from 'jsonwebtoken';
 
 function decodeToken(token) {
-
     const decoded = jwt.decode(String(token));
 
     return decoded;

@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
     const value = {
         updateCurrentUser,
         getTokenData,
-        currentUser        
+        currentUser
     }
 
     return (
