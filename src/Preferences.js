@@ -1,4 +1,5 @@
 import React from 'react'; 
+import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 
 const Preferences = () => {
@@ -6,13 +7,19 @@ const Preferences = () => {
     return (
         <div>
             <Navigation />
-            Page for staff to configure committee
-                    <div className='utility-text'>
-                        Delegate Statistics
+            <div className="main preferences">
+                <div className='container'>
+                    <h1>Committee Dashboard</h1>
+                    <div className='settings'>
+                        <h2>Committee Settings</h2>
                     </div>
-                    <div className='utility-text'>
-                        Committee Settings
+
+                    <div className='statistics'>
+                        <h2>Delegate Statistics</h2>
                     </div>
+                </div>
+            </div>
+            <Footer />
         </div>
     )
 }

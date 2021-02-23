@@ -138,7 +138,6 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-weight:bold;
     color:#CCC;
     user-select:none;
 }

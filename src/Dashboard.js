@@ -75,7 +75,7 @@ const Dashboard = () => {
                     <td>{committeesList[i].committee}</td>
                     <td>{`${committeesList[i].username}@${committeesList[i].conference.toLowerCase()}`}</td>
                     <td>{committeesList[i].password}</td>
-                    <td>
+                    <td className='mitochondria'>
                         <button className='comm-actions edit' onClick={e=>{
                             setUpdateId(committeesList[i]._id)
                             setUpdatedName(committeesList[i].committee)
@@ -235,7 +235,7 @@ const Dashboard = () => {
                                         <th>Committee</th>
                                         <th>Login Username</th>
                                         <th>Login Passcode</th>
-                                        <th>Actions</th>
+                                        <th className='mitochondria'>Actions</th>
                                     </tr>
                                     {(committeesList) ? displayCommitteeAccounts() : ''}
                                 </table>

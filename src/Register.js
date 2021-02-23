@@ -6,6 +6,7 @@ import Navigation from './components/Navigation';
 // TODO: Put all authentication related files into one place - API_URL should only be called once
 import { API_URL } from './config.js';
 import { useAuthContext } from './authentication/AuthContext';
+import Footer from './components/Footer';
 
 export default function Register() {
 
@@ -120,6 +121,7 @@ export default function Register() {
                     </div>
                 </div>
             </div>
+            <Footer />
         </>
     );
 }

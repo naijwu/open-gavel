@@ -29,6 +29,7 @@ export default function Login() {
 
     function handleSubmit(e) {
         e.preventDefault();
+        setLoading(true);
 
         axios.post(`${API_URL}/authentication/secretariat/login`, {
             email: email,
@@ -37,11 +38,11 @@ export default function Login() {
         .then(function (response) {
 
             updateCurrentUser(response.data);
-            
             history.push('/secretariat/dashboard')
         })
         .catch(function (error) {
             setSecError(error.message);
+            setLoading(false);
         });
 
         setLoading(false);
@@ -49,6 +50,7 @@ export default function Login() {
     
     function handleSubmitStaff(e) {
         e.preventDefault();
+        setLoading(true);
 
         let sanitizedUser = username.replace(/\s/g, '');
 
@@ -66,12 +68,13 @@ export default function Login() {
         .then(function (response) {
 
             updateCurrentUser(response.data);
-            
-            history.push('/committee/dashboard')
+            history.push('/committee/dashboard');
         })
         .catch(function (error) {
             setStaffError(error.message);
+            setLoading(false);
         });
+        setLoading(false);
     }
 
 
@@ -118,7 +121,7 @@ export default function Login() {
                                     </Link>
                                 </div>
                                 <div className='input-group'>
-                                    <input disabled={loading} onClick={handleSubmit} type="submit" value="Login" />
+                                    <input disabled={loading} className={`isdisabled${loading}`} onClick={handleSubmit} type="submit" value="Login" />
                                 </div>    
                             </div>
                         </div>
@@ -141,10 +144,12 @@ export default function Login() {
                                         <input type="text" value={staffPassword} onChange={e=>setStaffPassword(e.target.value)} />
                                     </div>
                                     <div className='text-tray'>
-                                        If you've forgotten your password, please contact a secretariat member.
+                                        <div className='notification'>
+                                            If you've forgotten your password, please contact a secretariat member.
+                                        </div>
                                     </div>
                                     <div className='input-group'>
-                                        <input disabled={loading} onClick={handleSubmitStaff} type="submit" value="Login" />
+                                        <input disabled={loading} className={`isdisabled${loading}`} onClick={handleSubmitStaff} type="submit" value="Login" />
                                     </div>    
                                 </div>
                             </div>
@@ -156,11 +161,12 @@ export default function Login() {
                     )}
                 </div>
             </div>
+            <Footer />
         </>
     ) : (
         <>
             <Navigation />
-            <div className='main'>
+            <div className='main leave'>
                 <div className='container'>
                     You're already logged in.
                 </div>
