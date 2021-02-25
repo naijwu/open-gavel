@@ -212,18 +212,28 @@ const Dashboard = () => {
                         <div className='account-information'>
                             <h2>Account Information</h2>
                             <div className='information-layout'>
-                                <h4>First Name</h4>
-                                {userData.firstName} (<span onClick={e=>setEditModal('firstName')}>Edit</span>)<br /><br />
-                                <h4>Last Name</h4>
-                                {userData.lastName} (<span onClick={e=>setEditModal('lastName')}>Edit</span>)<br /><br />
-                                <h4>Email</h4>
-                                {userData.email} (<span onClick={e=>setEditModal('email')}>Edit</span>)<br /><br />
-                                <h4>Conference</h4>
-                                {userData.conference} (<span onClick={e=>setEditModal('conference')}>Edit</span>)<br /><br />
-                                <h4>Danger Zone</h4>
-                                <span onClick={e=>{setFlaggedId(userData._id); setFlaggedIdType('secretariat')}} className='danger'>
-                                    Delete Account
-                                </span>
+                                <div className='information-item'>
+                                    <h4>First Name</h4>
+                                    {userData.firstName} (<span onClick={e=>setEditModal('firstName')}>Edit</span>)
+                                </div>
+                                <div className='information-item'>
+                                    <h4>Last Name</h4>
+                                    {userData.lastName} (<span onClick={e=>setEditModal('lastName')}>Edit</span>)
+                                </div>
+                                <div className='information-item'>
+                                    <h4>Email</h4>
+                                    {userData.email} (<span onClick={e=>setEditModal('email')}>Edit</span>)
+                                </div>
+                                <div className='information-item'>
+                                    <h4>Conference</h4>
+                                    {userData.conference} (<span onClick={e=>setEditModal('conference')}>Edit</span>)
+                                </div>
+                                <div className='information-item danger'>
+                                    <h4>Danger Zone</h4>
+                                    <span onClick={e=>{setFlaggedId(userData._id); setFlaggedIdType('secretariat')}} className='danger'>
+                                        Delete Account
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div className='committee-accounts'>

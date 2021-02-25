@@ -99,12 +99,14 @@ export default function Register() {
                                 <input type="text" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} />
                             </div>
                             <div className='text-tray'>
-                                Please note that this registration page is designated for conference Secretariat members. <br /><br />
+                                <div className='notification mb-30'>
+                                    Please note that this registration page is designated for conference Secretariat members.
+                                </div>
                                 <Link className='text-link' to='/login' >
                                     Login Instead
                                 </Link>
                             </div>
-                            <div className='input-group'>
+                            <div className='input-group submit'>
                                 <input className={`isdisabled${loading}`} disabled={loading} onClick={handleSubmit} type="submit" value="Register" />
                             </div>
                             {error && (

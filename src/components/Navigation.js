@@ -21,7 +21,7 @@ const Navigation = () => {
             <div className='header-inner'>
                 <div className='logo'>
                     <Link className='logo-link' to='/'>
-                        opengavel
+                        OpenGavel
                     </Link>
                 </div>
                 <div className='navigation'>

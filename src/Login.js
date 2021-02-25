@@ -120,7 +120,7 @@ export default function Login() {
                                         Register instead
                                     </Link>
                                 </div>
-                                <div className='input-group'>
+                                <div className='input-group submit'>
                                     <input disabled={loading} className={`isdisabled${loading}`} onClick={handleSubmit} type="submit" value="Login" />
                                 </div>    
                             </div>
@@ -148,7 +148,7 @@ export default function Login() {
                                             If you've forgotten your password, please contact a secretariat member.
                                         </div>
                                     </div>
-                                    <div className='input-group'>
+                                    <div className='input-group submit'>
                                         <input disabled={loading} className={`isdisabled${loading}`} onClick={handleSubmitStaff} type="submit" value="Login" />
                                     </div>    
                                 </div>
