@@ -41,7 +41,7 @@ export default function Login() {
             history.push('/secretariat/dashboard')
         })
         .catch(function (error) {
-            setSecError(error.message);
+            setSecError(`${error.message}. Check your email and/or password.`);
             setLoading(false);
         });
 
@@ -110,7 +110,7 @@ export default function Login() {
                                 </div>
                                 <div className='input-group'>
                                     <h3>Password</h3>
-                                    <input type="text" value={secPassword} onChange={e=>setSecPassword(e.target.value)} />
+                                    <input type="password" value={secPassword} onChange={e=>setSecPassword(e.target.value)} />
                                 </div>
                                 <div className='text-tray'>
                                     {/* <Link className='text-link' to='/login/password-reset' >
@@ -141,7 +141,7 @@ export default function Login() {
                                     </div>
                                     <div className='input-group'>
                                         <h3>Password</h3>
-                                        <input type="text" value={staffPassword} onChange={e=>setStaffPassword(e.target.value)} />
+                                        <input type="password" value={staffPassword} onChange={e=>setStaffPassword(e.target.value)} />
                                     </div>
                                     <div className='text-tray'>
                                         <div className='notification'>

@@ -1,8 +1,12 @@
 import React, { useState } from 'react'; 
+import { useAuthContext } from './authentication/AuthContext';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 
 const Preferences = () => {
+    const { currentUser, updateCurrentUser, getTokenData } = useAuthContext();
+
+    const userData = getTokenData();
 
     // Hooks for delegate statistics (filtering)
     const [primaryChecked, setPrimaryChecked] = useState(true);
@@ -35,7 +39,7 @@ const Preferences = () => {
                             <div className='left-col'>
                                 <div className='widget basic'>
                                     <div className='big'>
-                                        <h3>PacificMUN</h3>
+                                        <h3>{userData.conference}</h3>
                                         <h4>Conference</h4>
                                     </div>
                                 </div>

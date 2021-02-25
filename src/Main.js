@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter as Switch, Router, Link } from 'react-router-dom';
 
 import Navigation from './components/Navigation';
 import Footer from './components/Footer'
@@ -61,7 +62,7 @@ const Main = () => {
                         <div className='card'>
                             <h4>I'm a Secretariat</h4>
                             <p>
-                                Register your conference to use OpenGavel by clicking here.
+                                Register your conference to use OpenGavel by clicking <Link className='text-link inline' to={'/login'}>here</Link>.
                             </p>
                         </div>
                         <div className='card'>

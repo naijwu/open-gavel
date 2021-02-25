@@ -8,7 +8,6 @@ import Footer from './components/Footer';
 import EditModal from './components/EditModal';
 import ConfirmModal from './components/ConfirmModal';
 import CommitteeModal from './components/CommitteeModal';
-import bcrypt from 'bcryptjs';
 import EditCommitteeModal from './components/EditCommitteeModal';
 
 const Dashboard = () => {

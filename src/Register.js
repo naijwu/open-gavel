@@ -58,7 +58,7 @@ export default function Register() {
         })
         .then(function (response) {
             setError('');
-            setSuccess(JSON.stringify(response));
+            setSuccess(`You've successfully registered.`);
         })
         .catch(function (error) {
             setSuccess('');
@@ -92,11 +92,11 @@ export default function Register() {
                             </div>
                             <div className='input-group'>
                                 <h3>Password</h3>
-                                <input type="text" value={password} onChange={e=>setPassword(e.target.value)} />
+                                <input type="password" value={password} onChange={e=>setPassword(e.target.value)} />
                             </div>
                             <div className='input-group'>
                                 <h3>Confirm Password</h3>
-                                <input type="text" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} />
+                                <input type="password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} />
                             </div>
                             <div className='text-tray'>
                                 <div className='notification mb-30'>
