@@ -2,6 +2,8 @@
 
 OpenGavel is a free chairing program for Model UN conferences. The whole system is currently a work in progress.
 
+Node back-end is on a separate repo (open-gavel-server)
+
 Link: https://opengavel.app
 
 # Create React App commands...
