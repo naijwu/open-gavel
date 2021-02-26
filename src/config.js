@@ -1,3 +1,5 @@
-const API_URL = 'https://api.opengavel.app';
+const DEV = false;
+
+const API_URL = (DEV) ? 'http://localhost:8080' : 'https://api.opengavel.app';
 
 export { API_URL };

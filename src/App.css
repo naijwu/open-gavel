@@ -990,7 +990,7 @@ body {
 }
 
 .left-col {
-  width:380px;
+  width:350px;
 }
 
 .right-main {
@@ -1054,7 +1054,7 @@ body {
 }
 
 .countries .small p {
-  padding:20px;
+  padding:15px;
   flex-grow:1;
   color:white;
   font-weight:bold;
@@ -1170,6 +1170,182 @@ body {
   background:white;
   padding:20px;
 }
+
+
+.right-main .country-management {
+  margin-left:30px;
+  border-radius:4px;
+  overflow:hidden;
+  box-shadow:0 0 10px rgba(0,0,0,0.01);
+}
+
+.country-management .country-manage-head {
+  background: hsla(0,0%,100%,.425);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 10px rgb(0 0 0 / 1%);
+}
+
+.country-manage-head h4 {
+  padding:40px 20px 20px 20px;
+  font-size:24px;
+}
+
+.country-management .country-list-container {
+  background:white;
+  padding:20px;
+}
+
+.country-management .country-list-wrap {
+  background:white;
+  box-sizing: border-box;
+}
+
+.country-management .country-list-wrap.displaytrue {
+  /* a country is selected */
+  padding:10px;
+}
+
+.country-list-actions {
+  overflow:hidden;
+  height:0;
+}
+
+.country-list-actions button.deselect-all {
+  border:none;
+  padding:10px 15px;
+  outline:none;
+  font-size:16px;
+  border-radius:4px;
+  margin-right:15px;
+  margin-bottom:20px;
+  cursor:pointer;
+  background:var(--colour-orange-light);
+  color:var(--colour-orange);
+  font-weight:bold;
+}
+
+.country-list-actions button.deselect-all:hover {
+  color:white;
+  background:var(--colour-orange);
+}
+
+.country-management .country-list-wrap.displaytrue .country-list-actions {
+  height:50px;
+}
+
+.country-management .country-list::-webkit-scrollbar {
+  width:7px;
+  background:#eee;
+}
+
+.country-management .country-list::-webkit-scrollbar-thumb {
+  background:#CCC;
+  cursor:pointer;
+  border-radius:2px;
+}
+
+.country-standin {
+  background:white;
+  padding:5px;
+}
+
+.country-management .country-list {
+  border-radius:4px;
+  background:rgb(250, 250, 250);
+  max-height:700px;
+  overflow:auto;
+}
+
+.country-list .country-item {
+  padding:10px 15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-style: none none solid none;
+  border-width:1px;
+  border-color:#EEE;
+  cursor:pointer;
+}
+
+.country-list .country-item:last-child {
+  border:none;
+}
+
+.country-list .country-item.selected {
+  background:var(--colour-blue-light);
+}
+
+.country-list .country-item .checked {
+  height:15px;
+  background:var(--colour-blue-light);;
+  margin-right:15px;
+  border-radius:100%;
+  width:0;
+}
+
+.country-list .country-item.selected .checked {
+  width:15px;
+}
+
+.country-item p {
+  font-weight:bold;
+  text-align:left;
+  flex-grow:1;
+}
+
+.country-manage-actions {
+  padding:0 20px 20px 20px;
+  display:flex;
+  justify-content:flex-end;
+  background:white;
+  overflow:hidden;
+}
+
+.country-manage-actions .remove-country {
+  cursor:pointer;
+  padding:10px 15px;
+  border:none;
+  outline:none;
+  font-size:16px;
+  border-radius:4px;
+  background:var(--colour-red-light);
+  color:var(--colour-red);
+  transform:translateY(-100%);
+  font-weight:bold;
+}
+
+.country-manage-actions .remove-country:hover {
+  color:white;
+  background:var(--colour-red);
+}
+
+.country-manage-actions .remove-country.displaytrue {
+  transform:translateY(0);
+}
+
+.country-manage-actions .add-country {
+  margin-left:15px;
+  font-weight:bold;
+  border:none;
+  padding:10px 15px;
+  border-radius:4px;
+  font-size:16px;
+  cursor:pointer;
+  outline:none;
+  color:var(--colour-blue);
+  background:var(--colour-blue-light);
+}
+
+.country-manage-actions .add-country:hover {
+  box-shadow: 0 0 10px rgba(0,0,0,0.01);
+  color:white;
+  background:var(--colour-blue);
+}
+
+
+
+
+
 
 
 
