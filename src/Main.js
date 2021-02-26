@@ -62,7 +62,7 @@ const Main = () => {
                         <div className='card'>
                             <h4>I'm a Secretariat</h4>
                             <p>
-                                Register your conference to use OpenGavel by clicking <Link className='text-link inline' to={'/login'}>here</Link>.
+                                Register your conference to use OpenGavel by clicking <Link className='text-link inline' to={'/register'}>here</Link>.
                             </p>
                         </div>
                         <div className='card'>
