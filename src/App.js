@@ -14,6 +14,7 @@ import Chair from './Chair';
 import Profile from './Profile';
 
 import { AuthProvider, useAuthContext } from './authentication/AuthContext';
+import { CommitteeProvider } from './contexts/CommitteeContext';
 
 function App() {
   
@@ -67,21 +68,23 @@ function App() {
 
   return (
     <AuthProvider>
-      <Switch>
-        <Route exact path='/' component={Main} />
-        <Route exact path='/demo' component={Demo} />
-        <Route exact path='/login' component={Login} />
-        <Route exact path='/login/password-reset' component={ForgotPass} />
-        <Route exact path='/register' component={Register} />
-        
-        <AuthRoute exact path='/support' component={Support} />
+      <CommitteeProvider>
+        <Switch>
+          <Route exact path='/' component={Main} />
+          <Route exact path='/demo' component={Demo} />
+          <Route exact path='/login' component={Login} />
+          <Route exact path='/login/password-reset' component={ForgotPass} />
+          <Route exact path='/register' component={Register} />
+          
+          <AuthRoute exact path='/support' component={Support} />
 
-        <AuthStaffRoute exact path='/chair' component={Chair} />
-        <AuthStaffRoute exact path='/committee/dashboard' component={Preferences} />
+          <AuthStaffRoute exact path='/chair' component={Chair} />
+          <AuthStaffRoute exact path='/committee/dashboard' component={Preferences} />
 
-        <AuthSecRoute exact path='/secretariat/dashboard' component={Dashboard} />
-        <AuthSecRoute exact path='/secretariat/profile' component={Profile} />
-      </Switch>
+          <AuthSecRoute exact path='/secretariat/dashboard' component={Dashboard} />
+          <AuthSecRoute exact path='/secretariat/profile' component={Profile} />
+        </Switch>
+      </CommitteeProvider>
     </AuthProvider>
   );
 }

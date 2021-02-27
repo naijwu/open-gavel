@@ -1,37 +1,85 @@
 import React, { useEffect, useState } from 'react'; 
+import axios from 'axios';
 import { useAuthContext } from './authentication/AuthContext';
+import { countries } from './data/Countries';
+import { API_URL } from './config';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
-import { countries } from './data/Countries';
+import AddCountryModal from './components/AddCountryModal';
+import { useHistory } from 'react-router-dom';
 
 // Country Object (For Reference);
 // {
 //     "name": "Zimbabwe",
 //     "country_code": "ZW",
 //     "country_flag_base": "...", // base64 of custom delegation flag (field doesnt exist for UN countries)
+//     "presence": "",
 //     "stats_moderated": 0,
 //     "stats_unmoderated": 0,
 //     "stats_primary": 0,
 //     "stats_secondary": 0
 // }
 
+
 const Preferences = () => {
     const { currentUser, updateCurrentUser, getTokenData } = useAuthContext();
 
     const userData = getTokenData();
-
+    const history = useHistory();
 
     // This data should be received from the committee db entry
-    const [committeeCountries, setCommitteeCountries] = useState(countries);
+    const [committeeCountries, setCommitteeCountries] = useState([]); // Countries in the committee (shows up for roll call)
     const [displayCountries, setDisplayCountries] = useState([]); // Perhaps removing via database wouldn't require full reload (but useEffect would refresh the list)
-    const [selectedCountries, setSelectedCountries] = useState([]);
-    const [selected, setSelected] = useState('');
+    const [selectedCountries, setSelectedCountries] = useState([]); // Array of country_code of countries selected
+    const [selected, setSelected] = useState(''); // Number of countries selected, or false
+
+    // for the "Add UN Countries modal"
+    const [availableUNCountries, setAvailableUNCountries] = useState('');
+    const [isAddingCountries, setIsAddingCountries] = useState(false);
+
+    // Data from DB about statistics
+    const [statistics, setStatistics] = useState({});
 
     // Hooks for delegate statistics (filtering)
     const [primaryChecked, setPrimaryChecked] = useState(true);
     const [secondaryChecked, setSecondaryChecked] = useState(true);
     const [caucusChecked, setCaucusChecked] = useState(true);
     const [checked, setChecked] = useState('spc');
+
+
+    const [refresh, setRefresh] = useState(false);
+
+    const resetEditStates = () => {
+        setCommitteeCountries([]);
+        setDisplayCountries([]);
+        setSelectedCountries([]);
+        setSelected(false);
+        setRefresh(refresh ? false : true);
+    }
+
+    useEffect(() => {
+        axios.get(`${API_URL}/committee/${userData.committee_id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': currentUser,
+            }
+        }).then((res) => {
+            setCommitteeCountries(res.data.countries);
+            setStatistics({
+                mod_no: res.data.statistics.mod_no,
+                mod_minutes: res.data.statistics.mod_minutes,
+                unmod_no: res.data.statistics.unmod_no,
+                unmod_minutes: res.data.statistics.unmod_minutes,
+                primary_no: res.data.statistics.primary_no,
+                primary_minutes: res.data.statistics.primary_minutes,
+                secondary_no: res.data.statistics.secondary_no,
+                secondary_minutes: res.data.statistics.secondary_minutes
+            });
+        }).catch((err) => {
+            console.log(err);
+        });
+    }, [refresh]);
+
 
     const handleFilter = (type) => {
         setChecked((checked.indexOf(type) > -1) ? (checked.replace(type,'')) : (checked + type));
@@ -89,6 +137,83 @@ const Preferences = () => {
         setSelectedCountries(countries.splice(0,countries.length));
     }
 
+
+
+    const handleAddUNCountries = (e) => {
+
+        // opening the modal, passing through required information
+
+        const availableCountries = countries.filter((el) => {
+            return !committeeCountries.some((f) => {
+                return (f.country_code === el.country_code);
+            });
+        });
+
+        setAvailableUNCountries(availableCountries);
+        clearSelected();
+        setIsAddingCountries(true);
+    }
+
+    const handleSubmitUNCountries = (countries) => {
+        // This function is invoked from the Modal (AddCountryModal) to add the countries selected -- should return an array of country objects (see above)
+
+        // countries == countries to add 
+        let newCountries = committeeCountries;
+
+        for(let i = 0; i < countries.length; i++) {
+            newCountries.push(countries[i]);
+        }
+
+        let postBody = {
+            countries: newCountries,
+            statistics: statistics,
+        }
+        
+        axios.post(`${API_URL}/committee/${userData.committee_id}`, postBody, {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': currentUser,
+            }
+        }).then((res) => {
+            setIsAddingCountries(false);
+            // history.go(0);
+            resetEditStates();
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        newCountries = [];
+
+    }
+
+
+    const handleRemoveCountries = (e) => {
+        // TODO: Have a modal confirmation or something
+
+        const newCountries = committeeCountries.filter((item) => {
+            return !selectedCountries.includes(item.country_code);
+        });
+
+        let postBody = {
+            countries: newCountries,
+            statistics: statistics,
+        }
+        
+        axios.post(`${API_URL}/committee/${userData.committee_id}`, postBody, {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': currentUser,
+            }
+        }).then((res) => {
+            // history.go(0);
+            resetEditStates();
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+
+
+
     useEffect(() => {
         let displayArr = [];
 
@@ -111,12 +236,13 @@ const Preferences = () => {
         }
 
         setDisplayCountries(displayArr);
-    }, []);
+
+    }, [committeeCountries]);
 
     return (
         <div>
             <Navigation />
-            <div className="main preferences">
+            <div className={`main preferences modal${isAddingCountries}`}>
                 <div className='container'>
                     <h1>Committee Dashboard</h1>
 
@@ -164,8 +290,8 @@ const Preferences = () => {
                                         </div>
                                     </div>
                                     <div className='country-manage-actions'>
-                                        <button className={`remove-country display${selected ? true : ''}`}>Remove Selected ({selectedCountries.length})</button>
-                                        <button className='add-country un'>Add UN Countries</button>
+                                        <button className={`remove-country display${selected ? true : ''}`} onClick={handleRemoveCountries}>Remove Selected ({selectedCountries.length})</button>
+                                        <button className='add-country un' onClick={handleAddUNCountries}>Add UN Countries</button>
                                         <button className='add-country custom'>Add Custom Country</button>
                                     </div>
                                 </div>
@@ -179,45 +305,45 @@ const Preferences = () => {
                             <div className='left-col'>
                                 <div className='widget stats'>
                                     <div className='big'>
-                                        <h3>10</h3>
+                                        <h3>{statistics.mod_no ? statistics.mod_no : '0'}</h3>
                                         <h4>Moderated Caucuses</h4>
                                     </div>
                                     <div className='small'>
                                         <p>
-                                            120 minutes total
+                                            {statistics.mod_minutes ? statistics.mod_minutes : '0'} minutes total
                                         </p>
                                     </div>
                                 </div>
                                 <div className='widget stats'>
                                     <div className='big'>
-                                        <h3>5</h3>
+                                        <h3>{statistics.unmod_no ? statistics.unmod_no : '0'}</h3>
                                         <h4>Unmoderated Caucuses</h4>
                                     </div>
                                     <div className='small'>
                                         <p>
-                                            50 minutes total
+                                            {statistics.unmod_minutes ? statistics.unmod_minutes : '0'} minutes total
                                         </p>
                                     </div>
                                 </div>
                                 <div className='widget stats'>
                                     <div className='big'>
-                                        <h3>7</h3>
+                                        <h3>{statistics.primary_no ? statistics.primary_no : '0'}</h3>
                                         <h4>Primary Speeches</h4>
                                     </div>
                                     <div className='small'>
                                         <p>
-                                            14 minutes total
+                                            {statistics.primary_minutes ? statistics.primary_minutes : '0'} minutes total
                                         </p>
                                     </div>
                                 </div>
                                 <div className='widget stats'>
                                     <div className='big'>
-                                        <h3>20</h3>
+                                        <h3>{statistics.secondary_no ? statistics.secondary_no : '0'}</h3>
                                         <h4>Secondary Speeches</h4>
                                     </div>
                                     <div className='small'>
                                         <p>
-                                            32 minutes total
+                                            {statistics.secondary_minutes ? statistics.secondary_minutes : '0'} minutes total
                                         </p>
                                     </div>
                                 </div>
@@ -251,6 +377,14 @@ const Preferences = () => {
                 </div>
             </div>
             <Footer />
+            {(isAddingCountries) ? ( // Edits to the secretariat profile (not committee accounts)
+                <AddCountryModal
+                    visible={isAddingCountries}
+                    visibleFn={setIsAddingCountries} 
+                    countries={availableUNCountries}
+                    submit={handleSubmitUNCountries}
+                    />
+            ) : ''}
         </div>
     )
 }
