@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 import AddCountryModal from './components/AddCountryModal';
 import { useHistory } from 'react-router-dom';
+import { useCommitteeContext } from './contexts/CommitteeContext';
 
 // Country Object (For Reference);
 // {
@@ -22,23 +23,29 @@ import { useHistory } from 'react-router-dom';
 
 
 const Preferences = () => {
-    const { currentUser, updateCurrentUser, getTokenData } = useAuthContext();
+    const { currentUser, getTokenData } = useAuthContext();
+    const { initialize, getCountries, getStatistics, setStatistics, setCountries } = useCommitteeContext();
 
     const userData = getTokenData();
     const history = useHistory();
+
+    const [loaded, setLoaded] = useState(false);
 
     // This data should be received from the committee db entry
     const [committeeCountries, setCommitteeCountries] = useState([]); // Countries in the committee (shows up for roll call)
     const [displayCountries, setDisplayCountries] = useState([]); // Perhaps removing via database wouldn't require full reload (but useEffect would refresh the list)
     const [selectedCountries, setSelectedCountries] = useState([]); // Array of country_code of countries selected
     const [selected, setSelected] = useState(''); // Number of countries selected, or false
+    const [countryPresent, setCountryPresent] = useState(0);
+    const [countryVoting, setCountryVoting] = useState(0);
+    const [countryAbsent, setCountryAbsent] = useState(0);
 
     // for the "Add UN Countries modal"
     const [availableUNCountries, setAvailableUNCountries] = useState('');
     const [isAddingCountries, setIsAddingCountries] = useState(false);
 
     // Data from DB about statistics
-    const [statistics, setStatistics] = useState({});
+    const [statistics, committeeStatistics] = useState({});
 
     // Hooks for delegate statistics (filtering)
     const [primaryChecked, setPrimaryChecked] = useState(true);
@@ -49,35 +56,25 @@ const Preferences = () => {
 
     const [refresh, setRefresh] = useState(false);
 
-    const resetEditStates = () => {
-        setCommitteeCountries([]);
-        setDisplayCountries([]);
+    const resetEditStates = (all) => {
         setSelectedCountries([]);
         setSelected(false);
         setRefresh(refresh ? false : true);
+        if(all) {
+            setDisplayCountries([]);
+        }
+        // history.go(0);
     }
 
     useEffect(() => {
-        axios.get(`${API_URL}/committee/${userData.committee_id}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'auth-token': currentUser,
-            }
-        }).then((res) => {
-            setCommitteeCountries(res.data.countries);
-            setStatistics({
-                mod_no: res.data.statistics.mod_no,
-                mod_minutes: res.data.statistics.mod_minutes,
-                unmod_no: res.data.statistics.unmod_no,
-                unmod_minutes: res.data.statistics.unmod_minutes,
-                primary_no: res.data.statistics.primary_no,
-                primary_minutes: res.data.statistics.primary_minutes,
-                secondary_no: res.data.statistics.secondary_no,
-                secondary_minutes: res.data.statistics.secondary_minutes
-            });
-        }).catch((err) => {
-            console.log(err);
-        });
+
+        initialize();
+
+        setCommitteeCountries(getCountries());
+        committeeStatistics(getStatistics());
+
+        setLoaded(committeeCountries ? true : '');
+
     }, [refresh]);
 
 
@@ -175,6 +172,8 @@ const Preferences = () => {
                 'auth-token': currentUser,
             }
         }).then((res) => {
+            setCountries(postBody.countries);
+
             setIsAddingCountries(false);
             // history.go(0);
             resetEditStates();
@@ -206,7 +205,14 @@ const Preferences = () => {
             }
         }).then((res) => {
             // history.go(0);
-            resetEditStates();
+            setCountries(postBody.countries);
+            setStatistics(postBody.statistics);
+
+            if(newCountries.length === 0) {
+                resetEditStates(true);
+            } else {
+                resetEditStates(false);
+            }
         }).catch((err) => {
             console.log(err);
         });
@@ -216,6 +222,8 @@ const Preferences = () => {
 
     useEffect(() => {
         let displayArr = [];
+        let countryVoting = 0;
+        let countryPresent = 0;
 
         if(committeeCountries.length === 0) {
             return (
@@ -233,13 +241,22 @@ const Preferences = () => {
                     <img src={`https://www.countryflags.io/${committeeCountries[i].country_code}/flat/32.png`} />
                 </div>
             );
+
+            if(committeeCountries[i].presence === 'voting') {
+                countryVoting += 1;
+            } else if (committeeCountries[i].presence === 'present') {
+                countryPresent += 1;
+            }
         }
 
+        setCountryVoting(countryVoting);
+        setCountryPresent(countryPresent);
+        setCountryAbsent(committeeCountries.length - (countryVoting + countryPresent));
         setDisplayCountries(displayArr);
 
-    }, [committeeCountries]);
+    }, [refresh, committeeCountries]);
 
-    return (
+    return loaded && (
         <div>
             <Navigation />
             <div className={`main preferences modal${isAddingCountries}`}>
@@ -258,18 +275,18 @@ const Preferences = () => {
                                 </div>
                                 <div className='widget countries'>
                                     <div className='big'>
-                                        <h3>{committeeCountries.length}</h3>
+                                        <h3>{committeeCountries.length ? committeeCountries.length : '0'}</h3>
                                         <h4>Countries</h4>
                                     </div>
                                     <div className='small'>
                                         <p className='p'>
-                                            - Present
+                                            {countryPresent} Present
                                         </p>
                                         <p className='pv'>
-                                            - Voting
+                                            {countryVoting} Voting
                                         </p>
                                         <p className='a'>
-                                            - Absent
+                                            {countryAbsent} Absent
                                         </p>
                                     </div>
                                 </div>
