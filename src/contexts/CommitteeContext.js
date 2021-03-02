@@ -15,39 +15,11 @@ export function CommitteeProvider({ children }) {
     const { currentUser, getTokenData } = useAuthContext();
     const userData = getTokenData();
 
-    function initialize() {
+    function initialize(data) {
         // pull data from database
-        
-        axios.get(`${API_URL}/committee/${userData.committee_id}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'auth-token': currentUser,
-            }
-        }).then((res) => {
-            // set into session
-            let countries = res.data.countries;
-            let statistics = {
-                mod_no: res.data.statistics.mod_no,
-                mod_minutes: res.data.statistics.mod_minutes,
-                unmod_no: res.data.statistics.unmod_no,
-                unmod_minutes: res.data.statistics.unmod_minutes,
-                primary_no: res.data.statistics.primary_no,
-                primary_minutes: res.data.statistics.primary_minutes,
-                secondary_no: res.data.statistics.secondary_no,
-                secondary_minutes: res.data.statistics.secondary_minutes
-            };
-
-            sessionStorage.setItem('countries', JSON.stringify(countries));
-            sessionStorage.setItem('statistics', JSON.stringify(statistics));
-
-        }).catch((err) => {
-            console.log(err);
-        });
-
-        return {
-            countries: getCountries(),
-            statistics: getStatistics()
-        }
+        sessionStorage.setItem('countries', JSON.stringify(data.countries));
+        sessionStorage.setItem('statistics', JSON.stringify(data.statistics));
+        sessionStorage.setItem('pushNext', 'false');
     }
 
     function save(data) {
@@ -74,9 +46,20 @@ export function CommitteeProvider({ children }) {
 
     }
 
-    function destroy(data) {
-        // destroy from session
+    function setPushNext(data) {
+        sessionStorage.setItem('pushNext', data);
+    }
 
+    function getPushNext() {
+        return sessionStorage.getItem('pushNext');
+    }
+
+    function destroy() {
+        // destroy from session -- called when log-out
+
+        sessionStorage.removeItem('countries');
+        sessionStorage.removeItem('statistics');
+        sessionStorage.removeItem('pushNext');
     }
 
     function getCountries() {
@@ -109,6 +92,9 @@ export function CommitteeProvider({ children }) {
         setCountries,
         getStatistics,
         setStatistics,
+
+        setPushNext,
+        getPushNext,
     }
 
     return (

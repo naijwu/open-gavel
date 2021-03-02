@@ -151,7 +151,6 @@
 
 
 .app-inner {
-    height:100%;
     width:100%;
     display:flex;
     
@@ -170,7 +169,7 @@
 }
 
 .rollcall .clc {
-    margin:40px 0;
+    margin:40px 0 0 0;
     border-radius:4px;
     overflow:hidden;
 }
@@ -233,4 +232,81 @@
 
 .rollcall .clc .country:last-child {
     border:none;
+}
+
+
+
+
+.motions-grid {
+    display:flex;
+    flex-direction:column;
+    margin-top:35px;
+}
+
+.motions-grid .motion-item {
+    margin-top:35px;
+    border-radius:4px;
+    box-shadow:0 0 10px rgba(0,0,0,0.01);
+    overflow:hidden;
+}
+
+.motions-grid .motion-item .motion-preview {
+    padding:20px;
+    background:white;
+    font-size:23px;
+    font-weight:bold;
+}
+
+.motions-grid .motion-item .motion-edit {
+    display:flex;
+}
+
+.motions-grid .motion-item .inputs {
+    display:flex;
+    box-sizing: border-box;
+    padding:20px;
+    
+    background: hsla(0,0%,100%,.425);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgb(0 0 0 / 1%);
+    flex-grow:1;
+}
+
+.motions-grid .motion-item .motion-action {
+    background:var(--colour-blue-light);
+    color:var(--colour-blue);
+    cursor:pointer;
+    font-weight:bold;
+    width:100px;
+    padding:20px;
+    display:flex;
+    align-items:center;
+}
+
+.motions-grid .motion-item .motion-action:hover {
+    background:var(--colour-blue);
+    color:white;
+}
+
+.motions-grid .motion-item .input-group {
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    margin-right:20px;
+}
+
+.motions-grid .motion-item .input-group.motion {
+    flex-grow:1;
+    margin-right:0;
+}
+
+.motions-grid .motion-item .input-group select {
+    padding:9px 15px;
+    border-radius:4px;
+    border:none;
+    background:#eee;
+    outline:none;
+    cursor:pointer;
+    font-size:16px;
+    margin-top:10px;
 }

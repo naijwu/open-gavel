@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { BrowserRouter as Router, Switch, Route, Link, useHistory } from 'react-router-dom';
+import { useAuthContext } from './authentication/AuthContext';
 import { useCommitteeContext } from './contexts/CommitteeContext';
+import { API_URL } from './config';
 import './OpenGavel.css';
-import isEqual from 'underscore/modules/isEqual'
 
 import RollCall from './chair/RollCall';
 import RecordMotions from './chair/RecordMotions';
@@ -18,7 +20,8 @@ import Settings from './assets/icons/settings.svg';
 import Sliders from './assets/icons/sliders.svg';
 
 const Chair = () => {
-    const { initialize, getCountries, getStatistics, setStatistics, setCountries, persist } = useCommitteeContext();
+    const { initialize, getCountries, getStatistics, setStatistics, setCountries, setPushNext, getPushNext, persist } = useCommitteeContext();
+    const { currentUser, getTokenData } = useAuthContext();
 
     const history = useHistory();
 
@@ -29,18 +32,49 @@ const Chair = () => {
     const [slidOut, setSlidOut] = useState(true); 
     const [slidOutHover, setSlidOutHover] = useState(false); 
 
+    const userData = getTokenData();
 
+    // only at the very beginning
     useEffect(() => {
+        
+        axios.get(`${API_URL}/committee/${userData.committee_id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': currentUser,
+            }
+        }).then((res) => {
+            // set into session
+            let countries = res.data.countries;
+            let statistics = {
+                mod_no: res.data.statistics.mod_no,
+                mod_minutes: res.data.statistics.mod_minutes,
+                unmod_no: res.data.statistics.unmod_no,
+                unmod_minutes: res.data.statistics.unmod_minutes,
+                primary_no: res.data.statistics.primary_no,
+                primary_minutes: res.data.statistics.primary_minutes,
+                secondary_no: res.data.statistics.secondary_no,
+                secondary_minutes: res.data.statistics.secondary_minutes
+            };
 
-        initialize();
+            setCommitteeCountries(countries.sort((a, b) => (a.name > b.name) ? 1 : -1));
+            setCommitteeStatistics(statistics);
 
-        setCommitteeCountries(getCountries());
-        setCommitteeStatistics(getStatistics());
+            initialize({
+                countries: countries,
+                statistics: statistics,
+            });
 
+        }).catch((err) => {
+            console.log(err);
+        });
 
     }, []);
 
     const handleRollCallUpdates = (country, status) => {
+        // makes changes
+        setPushNext('true');
+
+
         // id: id of country, presence: present/voting/absent (default)
 
         // handle
@@ -69,13 +103,19 @@ const Chair = () => {
     const persistMiddleware = (next, value) => {
 
         // check if there is a difference between db state vs this state
-        // persist({
-        //     statistics: committeeStatistics,
-        //     countries: committeeCountries,
-        // });
 
-        // TODO: Conditional save (if initial vs current session data is different)
-    
+        let shouldPush = getPushNext();
+
+        // conditional save (if there are any changes made)
+        if (shouldPush === 'true') {
+            persist({
+                statistics: committeeStatistics,
+                countries: committeeCountries,
+            });
+        } 
+
+        // now updated
+        setPushNext('false');
 
         // Handle next action
         if (next === 'component') {
@@ -100,15 +140,15 @@ const Chair = () => {
                             </div>
                         </div>
                         <div className='tab'>
-                            <div className={`tab-text ${(component === 'motions') ? 'active' : ''}`} onClick={e => persistMiddleware('component', 'motions')}>
-                                <img src={Edit} />
-                                Motions
-                            </div>
-                        </div>
-                        <div className='tab'>
                             <div className={`tab-text ${(component === 'speakers') ? 'active' : ''}`} onClick={e => persistMiddleware('component', 'speakers')}>
                               <img src={User} />
                                 Speakers
+                            </div>
+                        </div>
+                        <div className='tab'>
+                            <div className={`tab-text ${(component === 'motions') ? 'active' : ''}`} onClick={e => persistMiddleware('component', 'motions')}>
+                                <img src={Edit} />
+                                Motions
                             </div>
                         </div>
                         <div className='tab'>

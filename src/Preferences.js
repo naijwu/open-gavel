@@ -21,7 +21,6 @@ import { useCommitteeContext } from './contexts/CommitteeContext';
 //     "stats_secondary": 0
 // }
 
-
 const Preferences = () => {
     const { currentUser, getTokenData } = useAuthContext();
     const { initialize, getCountries, getStatistics, setStatistics, setCountries } = useCommitteeContext();
@@ -32,20 +31,17 @@ const Preferences = () => {
     const [loaded, setLoaded] = useState(false);
 
     // This data should be received from the committee db entry
-    const [committeeCountries, setCommitteeCountries] = useState([]); // Countries in the committee (shows up for roll call)
+    const [committeeCountries, setCommitteeCountries] = useState(getCountries()); // Countries in the committee (shows up for roll call)
     const [displayCountries, setDisplayCountries] = useState([]); // Perhaps removing via database wouldn't require full reload (but useEffect would refresh the list)
     const [selectedCountries, setSelectedCountries] = useState([]); // Array of country_code of countries selected
     const [selected, setSelected] = useState(''); // Number of countries selected, or false
-    const [countryPresent, setCountryPresent] = useState(0);
-    const [countryVoting, setCountryVoting] = useState(0);
-    const [countryAbsent, setCountryAbsent] = useState(0);
 
     // for the "Add UN Countries modal"
     const [availableUNCountries, setAvailableUNCountries] = useState('');
     const [isAddingCountries, setIsAddingCountries] = useState(false);
 
     // Data from DB about statistics
-    const [statistics, committeeStatistics] = useState({});
+    const [statistics, committeeStatistics] = useState(getStatistics());
 
     // Hooks for delegate statistics (filtering)
     const [primaryChecked, setPrimaryChecked] = useState(true);
@@ -67,11 +63,37 @@ const Preferences = () => {
     }
 
     useEffect(() => {
+        
+        axios.get(`${API_URL}/committee/${userData.committee_id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': currentUser,
+            }
+        }).then((res) => {
+            // set into session
+            let countries = res.data.countries;
+            let statistics = {
+                mod_no: res.data.statistics.mod_no,
+                mod_minutes: res.data.statistics.mod_minutes,
+                unmod_no: res.data.statistics.unmod_no,
+                unmod_minutes: res.data.statistics.unmod_minutes,
+                primary_no: res.data.statistics.primary_no,
+                primary_minutes: res.data.statistics.primary_minutes,
+                secondary_no: res.data.statistics.secondary_no,
+                secondary_minutes: res.data.statistics.secondary_minutes
+            };
+            
+            setCommitteeCountries(countries.sort((a, b) => (a.name > b.name) ? 1 : -1));
+            committeeStatistics(statistics);
 
-        initialize();
+            initialize({
+                countries: countries,
+                statistics: statistics,
+            });
 
-        setCommitteeCountries(getCountries());
-        committeeStatistics(getStatistics());
+        }).catch((err) => {
+            console.log(err);
+        });
 
         setLoaded(committeeCountries ? true : '');
 
@@ -222,8 +244,6 @@ const Preferences = () => {
 
     useEffect(() => {
         let displayArr = [];
-        let countryVoting = 0;
-        let countryPresent = 0;
 
         if(committeeCountries.length === 0) {
             return (
@@ -241,17 +261,8 @@ const Preferences = () => {
                     <img src={`https://www.countryflags.io/${committeeCountries[i].country_code}/flat/32.png`} />
                 </div>
             );
-
-            if(committeeCountries[i].presence === 'voting') {
-                countryVoting += 1;
-            } else if (committeeCountries[i].presence === 'present') {
-                countryPresent += 1;
-            }
         }
-
-        setCountryVoting(countryVoting);
-        setCountryPresent(countryPresent);
-        setCountryAbsent(committeeCountries.length - (countryVoting + countryPresent));
+        
         setDisplayCountries(displayArr);
 
     }, [refresh, committeeCountries]);
@@ -276,18 +287,7 @@ const Preferences = () => {
                                 <div className='widget countries'>
                                     <div className='big'>
                                         <h3>{committeeCountries.length ? committeeCountries.length : '0'}</h3>
-                                        <h4>Countries</h4>
-                                    </div>
-                                    <div className='small'>
-                                        <p className='p'>
-                                            {countryPresent} Present
-                                        </p>
-                                        <p className='pv'>
-                                            {countryVoting} Voting
-                                        </p>
-                                        <p className='a'>
-                                            {countryAbsent} Absent
-                                        </p>
+                                        <h4>Countries Total</h4>
                                     </div>
                                 </div>
                             </div>
