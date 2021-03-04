@@ -224,6 +224,10 @@ const Dashboard = () => {
                                     {userData.email} (<span onClick={e=>setEditModal('email')}>Edit</span>)
                                 </div>
                                 <div className='information-item'>
+                                    <h4>Conference Full Name</h4>
+                                    {userData.conferenceFullName} (<span onClick={e=>setEditModal('conferenceFullName')}>Edit</span>)
+                                </div>
+                                <div className='information-item'>
                                     <h4>Conference</h4>
                                     {userData.conference} (<span onClick={e=>setEditModal('conference')}>Edit</span>)
                                 </div>

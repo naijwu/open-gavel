@@ -175,9 +175,9 @@
 }
 
 .rollcall .clc .country {
-    background:#eee;
+    background:rgb(255, 255, 255);
     border-style:none none solid none;
-    border-color:#ccc;
+    border-color:#EEE;
     border-width:1px;
     display:flex;
     justify-content:flex-end;
@@ -309,9 +309,6 @@
 
 .motions-grid .motion-item {
     margin-top:35px;
-    border-radius:4px;
-    box-shadow:0 0 10px rgba(0,0,0,0.01);
-    overflow:hidden;
     
     height:auto;
     animation-name: appear;
@@ -356,6 +353,9 @@
 }
 
 .motions-grid .motion-item .motion-edit {
+    box-shadow:0 0 10px rgba(0,0,0,0.01);
+    border-radius:4px;
+    overflow:hidden;
     display:flex;
     width:100%;
 }

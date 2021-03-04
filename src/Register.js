@@ -15,6 +15,7 @@ export default function Register() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [conference, setConference] = useState('');
+    const [conferenceFullName, setConferenceFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,7 +28,7 @@ export default function Register() {
     // TODO: More robust and UI-friendly form feedback
     function isValid() {
 
-        if (firstName === '' || lastName === '' || conference === '' || email === '' || password == '') return false;
+        if (firstName === '' || lastName === '' || conference === '' || email === '' || password == '' || conferenceFullName == '') return false;
 
         return true;
     }
@@ -54,6 +55,7 @@ export default function Register() {
             lastName: lastName,
             email: email,
             password: password,
+            conferenceFullName: conferenceFullName,
             conference: conference
         })
         .then(function (response) {
@@ -83,7 +85,11 @@ export default function Register() {
                                 <input type="text" value={lastName} onChange={e=>setLastName(e.target.value)} />
                             </div>
                             <div className='input-group'>
-                                <h3>Name of Conference</h3>
+                                <h3>Conference Name</h3>
+                                <input type="text" value={conferenceFullName} onChange={e=>setConferenceFullName(e.target.value)} />
+                            </div>
+                            <div className='input-group'>
+                                <h3>Abbreviated Conference Name</h3>
                                 <input type="text" value={conference} onChange={e=>setConference(e.target.value)} />
                             </div>
                             <div className='input-group'>

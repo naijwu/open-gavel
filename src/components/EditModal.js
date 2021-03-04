@@ -10,7 +10,8 @@ const EditModal = (props) => {
         firstName: 'First Name',
         lastName: 'Last Name',
         email: 'Email',
-        conference: 'Conference',
+        conference: 'Conference Name (Abbreviated)',
+        conferenceFullName: 'Conference Name (Full)',
     }
 
     return (
