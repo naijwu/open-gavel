@@ -2,16 +2,19 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route, NavLink, Link, Redirect, useHistory } from 'react-router-dom';
 
 import { useAuthContext } from '../authentication/AuthContext';
+import { useCommitteeContext } from '../contexts/CommitteeContext';
 
 const Navigation = () => {
 
     const { currentUser, updateCurrentUser, getTokenData } = useAuthContext();
+    const { destroy } = useCommitteeContext();
 
     const history = useHistory();
 
     function handleLogout(e) {
         e.preventDefault();
 
+        destroy();
         updateCurrentUser('');
     }
 

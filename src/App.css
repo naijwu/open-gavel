@@ -37,6 +37,7 @@ glassmorph: {
 
   --colour-orange: #F6B969;
   --colour-orange-light:#F6B96925;
+  --colour-orange-dark: #f19c2c;
 
   --colour-yellow: #FFD900;
   --colour-yellow-light:#FFD90020;
@@ -1059,10 +1060,10 @@ body {
 
 .information-container .widget {
   margin-bottom:30px;
-  background:white;
 }
 
-.information-container .basic {
+.information-container .basic .big {
+  background:white;
   padding:20px;
 }
 
@@ -1105,7 +1106,8 @@ body {
 }
 
 .countries .small,
-.stats .small {
+.stats .small,
+.basic .small {
   display:flex;
   width:100%;
   justify-content:stretch;
@@ -1145,7 +1147,8 @@ body {
   background:transparent;
 }
 
-.stats .small p {
+.stats .small p,
+.basic .small p {
   padding:20px;
   color:black;
   font-weight:bold;

@@ -15,16 +15,19 @@ export function CommitteeProvider({ children }) {
     const { currentUser, getTokenData } = useAuthContext();
     const userData = getTokenData();
 
+    // Settings: {
+    //     default_start_screen, (dropdown, blank/rollcall/speakers/motions/active-caucus)
+    //     hide_all_notifications,
+    //     default_drawer_position,
+    //     auto_start_speaker_timer,
+    //     dark_mode,
+    // }
+
     function initialize(data) {
         // pull data from database
         sessionStorage.setItem('countries', JSON.stringify(data.countries));
         sessionStorage.setItem('statistics', JSON.stringify(data.statistics));
         sessionStorage.setItem('pushNext', 'false');
-    }
-
-    function save(data) {
-        // upload to db
-
     }
 
     function persist(data) {
@@ -60,18 +63,30 @@ export function CommitteeProvider({ children }) {
         sessionStorage.removeItem('countries');
         sessionStorage.removeItem('statistics');
         sessionStorage.removeItem('pushNext');
+        sessionStorage.removeItem('motions');
     }
 
     function getCountries() {
         // returns committeeCountries
-        let sorted_countries = JSON.parse(sessionStorage.getItem('countries'))
-        return sorted_countries.sort((a, b) => (a.name > b.name) ? 1 : -1);
+        let countries = sessionStorage.getItem('countries');
+        if(!countries) {
+            // null countries -- session storage hasn't exist
+            return null;
+        } else {
+            let sorted_countries = JSON.parse(countries)
+            return sorted_countries.sort((a, b) => (a.name > b.name) ? 1 : -1);
+        }
     }
 
     function getStatistics() {
         // returns statistics
-
-        return JSON.parse(sessionStorage.getItem('statistics'));
+        let statistics = sessionStorage.getItem('statistics');
+        if(!statistics) {
+            // null statistics -- session storage hasn't been set
+            return null;
+        } else {
+            return JSON.parse(statistics);
+        }
     }
 
     function setCountries(data) {
@@ -82,9 +97,21 @@ export function CommitteeProvider({ children }) {
         sessionStorage.setItem('statistics', JSON.stringify(data));
     }
 
+    function setMotionsList(data) {
+        sessionStorage.setItem('motions', JSON.stringify(data));
+    }
+
+    function getMotionsList() {
+        let motions = sessionStorage.getItem('motions');
+        if(!motions) {
+            return null;
+        } else {
+            return JSON.parse(motions);
+        }
+    }
+
     const value = {
         initialize,
-        save,
         persist,
         destroy,
 
@@ -92,6 +119,9 @@ export function CommitteeProvider({ children }) {
         setCountries,
         getStatistics,
         setStatistics,
+
+        getMotionsList,
+        setMotionsList,
 
         setPushNext,
         getPushNext,

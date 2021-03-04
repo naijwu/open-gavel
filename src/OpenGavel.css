@@ -236,6 +236,70 @@
 
 
 
+.motions .one-liner {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.motions .add-motion {
+    padding:10px 15px;
+    border-radius:4px;
+    display:table;
+    cursor:pointer;
+    font-weight: bold;
+    user-select:none;
+    background:var(--colour-green-light);
+    color:var(--colour-green);
+}
+
+.motions .add-motion:hover {
+    background:var(--colour-green);
+    color:white;
+}
+
+.motions .add-motion.disabled,
+.motions .add-motion.disabled:hover {
+    background:black;
+    color:#777;
+    cursor:default;
+}
+
+.notification {
+    margin:50px 0 40px 0;
+    background:var(--colour-orange-light);
+    border-style: none none none solid;
+    border-width:5px;
+    border-color:var(--colour-orange);
+    border-radius:4px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.01);
+    padding:20px;
+}
+
+.notification h3 {
+    padding:10px 0;
+    font-size:1.5rem;
+}
+
+.notification p {
+    line-height:30px;
+}
+
+.notification .action {
+    display:flex;
+    padding-top:10px;
+}
+
+.notification .action .noti-text-link {
+    margin-right:20px;
+    color:var(--colour-orange);
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.notification .action .noti-text-link:hover {
+    color:var(--colour-orange-dark);
+}
 
 .motions-grid {
     display:flex;
@@ -248,6 +312,38 @@
     border-radius:4px;
     box-shadow:0 0 10px rgba(0,0,0,0.01);
     overflow:hidden;
+    
+    height:auto;
+    animation-name: appear;
+    animation-timing-function: cubic-bezier(.04,.53,.38,.97);
+    animation-duration: 0.2s;
+}
+.motions-grid .motion-item.hide,
+.notification.hide {
+    animation-name: disappear;
+    animation-duration: 0.2s;
+}
+
+@keyframes appear {
+  from {
+      height:0;
+      opacity:0;
+      transform:translateY(-10%);
+  }
+  to {
+      opacity:1;
+      transform:translateY(0);
+  }
+}
+@keyframes disappear {
+  from {
+      opacity:1;
+  }
+  to {
+    height:0;
+    margin-top:-1px;
+    opacity:0;
+  }
 }
 
 .motions-grid .motion-item .motion-preview {
@@ -255,10 +351,13 @@
     background:white;
     font-size:23px;
     font-weight:bold;
+    width:100%;
+    box-sizing: border-box;
 }
 
 .motions-grid .motion-item .motion-edit {
     display:flex;
+    width:100%;
 }
 
 .motions-grid .motion-item .inputs {
@@ -277,7 +376,8 @@
     color:var(--colour-blue);
     cursor:pointer;
     font-weight:bold;
-    width:100px;
+    width:85px;
+    justify-content: center;
     padding:20px;
     display:flex;
     align-items:center;
@@ -295,6 +395,19 @@
     margin-right:20px;
 }
 
+.motions-grid .motion-item .input-group input {
+    width:100%;
+}
+
+.motions-grid .motion-item .motion-edit .time-input {
+    display:flex;
+    width:300px;
+}
+
+.motions-grid .motion-item .motion-edit .time-input .input-group {
+    width:100%;
+}
+
 .motions-grid .motion-item .input-group.motion {
     flex-grow:1;
     margin-right:0;
@@ -309,4 +422,21 @@
     cursor:pointer;
     font-size:16px;
     margin-top:10px;
+}
+
+.motions-grid .motion-item {
+    display:flex;
+    flex-direction: column;
+    align-items:flex-end;
+}
+
+.motions-grid .motion-item .subtle-delete {
+    font-weight:bold;
+    color:#CCC;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.motions-grid .motion-item .subtle-delete:hover {
+    color:#777;
 }

@@ -31,7 +31,7 @@ const Preferences = () => {
     const [loaded, setLoaded] = useState(false);
 
     // This data should be received from the committee db entry
-    const [committeeCountries, setCommitteeCountries] = useState(getCountries()); // Countries in the committee (shows up for roll call)
+    const [committeeCountries, setCommitteeCountries] = useState(getCountries() ? getCountries() : []); // Countries in the committee (shows up for roll call)
     const [displayCountries, setDisplayCountries] = useState([]); // Perhaps removing via database wouldn't require full reload (but useEffect would refresh the list)
     const [selectedCountries, setSelectedCountries] = useState([]); // Array of country_code of countries selected
     const [selected, setSelected] = useState(''); // Number of countries selected, or false
@@ -41,7 +41,7 @@ const Preferences = () => {
     const [isAddingCountries, setIsAddingCountries] = useState(false);
 
     // Data from DB about statistics
-    const [statistics, committeeStatistics] = useState(getStatistics());
+    const [statistics, committeeStatistics] = useState(getStatistics() ? getStatistics() : []);
 
     // Hooks for delegate statistics (filtering)
     const [primaryChecked, setPrimaryChecked] = useState(true);
@@ -85,7 +85,6 @@ const Preferences = () => {
             
             setCommitteeCountries(countries.sort((a, b) => (a.name > b.name) ? 1 : -1));
             committeeStatistics(statistics);
-
             initialize({
                 countries: countries,
                 statistics: statistics,
@@ -283,11 +282,10 @@ const Preferences = () => {
                                         <h3>{userData.committee}</h3>
                                         <h4>{userData.conference}</h4>
                                     </div>
-                                </div>
-                                <div className='widget countries'>
-                                    <div className='big'>
-                                        <h3>{committeeCountries.length ? committeeCountries.length : '0'}</h3>
-                                        <h4>Countries Total</h4>
+                                    <div className='small'>
+                                        <p>
+                                            {committeeCountries.length ? committeeCountries.length : '0'} countries total
+                                        </p>
                                     </div>
                                 </div>
                             </div>
