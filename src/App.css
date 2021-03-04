@@ -255,6 +255,7 @@ body {
   min-height:500px;
   
   display:flex;
+  flex-direction: column;
   align-items:center;
   justify-content:center;
 }
@@ -262,6 +263,10 @@ body {
 .main .impact h1 {
   margin-left:10px;
   font-size:50px;
+}
+
+.main .impact h2 {
+  padding-top:40px;
 }
 
 
@@ -329,6 +334,7 @@ body {
   padding:20px;
   background:white;
   box-shadow: 0 0 10px rgba(0,0,0,0.01);
+  border-radius:4px;
 }
 
 .cta .card h4 {
@@ -1057,9 +1063,14 @@ body {
   flex-grow:1;
 }
 
-
 .information-container .widget {
   margin-bottom:30px;
+}
+
+.information-container .basic {
+  border-radius:4px;
+  overflow:hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.01);
 }
 
 .information-container .basic .big {
