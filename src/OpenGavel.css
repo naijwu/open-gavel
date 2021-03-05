@@ -440,3 +440,177 @@
 .motions-grid .motion-item .subtle-delete:hover {
     color:#777;
 }
+
+
+
+
+
+.no-caucus {
+    margin-top:35px;
+}
+
+.caucus .information {
+  margin:35px 0;
+  display:flex;
+  flex-direction:column;
+}
+
+.caucus .information-text {
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius:4px 4px 0 0;
+  background:white;
+}
+
+.caucus h3 {
+  color:#777;
+  padding-bottom:15px;
+}
+
+.caucus .information-text h2 {
+  font-size:2rem;
+}
+
+.caucus .information-timer {
+  height:10px;
+  background:#CCC;
+  width:100%;
+  display:table;
+  box-shadow: 0 0 10px rgba(0,0,0,0.01);
+  border-radius:0 0 4px 4px;
+  overflow:hidden;
+}
+
+.elapsed {
+  height:10px;
+  background:var(--colour-blue);
+  transition:1s width linear; /* to make the timer linear hehe */
+}
+
+.timer-band {
+    background:#ccc;
+    margin: 20px 0;
+    border-radius:4px;
+    overflow:hidden;
+}
+
+.speaker  {
+    display:flex;
+    justify-content:center;
+    margin:100px 0;
+}
+
+.speaker-inner {
+    text-align:center;
+}
+
+.speaker .options {
+    display:flex;
+    margin-top:20px;
+}
+
+.speaker .options .media-button {
+    margin-right:15px;
+    padding:10px 15px;
+    border-radius:4px;
+    background:#eee;
+    cursor:pointer;
+}
+
+.speaker .options .media-button:hover {
+    background:#ccc;
+}
+
+.speaker .options .media-button:last-child {
+    margin-right:0;
+}
+
+
+.caucus .caucus-action-tray {
+  margin-top:50px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.caucus .equalizaaa,
+.caucus .manage-speaker {
+  width:49%;
+}
+
+.caucus .manage-speaker,
+.caucus .manage-caucus {
+  padding:20px;
+  border-radius:4px;
+  background:white;
+  box-sizing: border-box;
+  box-shadow: 0 0 10px rgba(0,0,0,0.01);
+}
+
+.caucus .manage-caucus {
+  width:100%;
+}
+
+.caucus .speaker-container {
+  display:flex;
+  flex-direction:column;
+  box-sizing: border-box;
+}
+
+.caucus .speaker-search input[type="text"] {
+  padding:10px;
+  outline:none;
+  border:none;
+  width:100%;
+  box-sizing: border-box;
+  font-size:1rem;
+  background:#f3f3f3;
+  border-radius:4px;
+  margin-bottom:15px;
+}
+
+.caucus .speaker-search input[type="text"]:hover,
+.caucus .speaker-search input[type="text"]:focus {
+    background:#eee;
+}
+
+.caucus .manage-speaker .speaker-list {
+  max-height:400px;
+  overflow:auto;
+  background:#eee;
+  border-radius:4px;
+}
+
+.caucus .manage-speaker .speaker-list .speaker-item {
+  padding:10px;
+  border-style:none none solid none;
+  border-width:1px;
+  border-color:#ccc;
+  cursor:pointer;
+}
+
+.caucus .manage-speaker .speaker-list .speaker-item:hover {
+  background:#ccc;
+}
+
+.caucus .manage-speaker .speaker-list .speaker-item:last-child {
+  border:none;
+  border-radius: 0 0 4px 4px;
+}
+
+.caucus .manage-caucus .delete-caucus {
+  padding:10px 15px;
+  font-weight:bold;
+  border-radius:4px;
+  cursor:pointer;
+  background:var(--colour-red-light);
+  color:var(--colour-red);
+  display:table;
+  user-select: none;
+}
+
+.caucus .manage-caucus .delete-caucus:hover {
+  background:var(--colour-red);
+  color:white;
+}
+
+

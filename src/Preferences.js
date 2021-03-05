@@ -36,18 +36,19 @@ const Preferences = () => {
     const [selectedCountries, setSelectedCountries] = useState([]); // Array of country_code of countries selected
     const [selected, setSelected] = useState(''); // Number of countries selected, or false
 
-    // for the "Add UN Countries modal"
+    // For the "Add UN Countries modal"
     const [availableUNCountries, setAvailableUNCountries] = useState('');
     const [isAddingCountries, setIsAddingCountries] = useState(false);
 
     // Data from DB about statistics
     const [statistics, committeeStatistics] = useState(getStatistics() ? getStatistics() : []);
 
-    // Hooks for delegate statistics (filtering)
+    // For delegate statistics
     const [primaryChecked, setPrimaryChecked] = useState(true);
     const [secondaryChecked, setSecondaryChecked] = useState(true);
     const [caucusChecked, setCaucusChecked] = useState(true);
     const [checked, setChecked] = useState('spc');
+    const [displayStatistics, setDisplayStatistics] = useState([]);
 
 
     const [refresh, setRefresh] = useState(false);
@@ -243,9 +244,10 @@ const Preferences = () => {
 
     useEffect(() => {
         let displayArr = [];
+        let displayArrStatistics = [];
 
         if(committeeCountries.length === 0) {
-            return (
+            displayArr.push(
                 <div className='country-standin'>
                     Add countries by clicking the buttons below.
                 </div>
@@ -262,9 +264,48 @@ const Preferences = () => {
             );
         }
         
-        setDisplayCountries(displayArr);
+        setDisplayCountries(displayArr); 
 
     }, [refresh, committeeCountries]);
+
+    useEffect(() => {
+        let displayArrStatistics = [];
+
+        if(committeeCountries.length === 0) {
+            displayArrStatistics.push(
+                <div className='country-standin'>
+                    No countries
+                </div>
+            )
+        }
+
+        let highestVal = 0;
+        
+        for (let i = 0; i < committeeCountries.length; i++) {
+            let country = committeeCountries[i];
+            let number = parseInt(country.stats_moderated) + parseInt(country.stats_primary) + parseInt(country.stats_secondary);
+            if(number > highestVal) {
+                highestVal = number;
+            }
+        }
+
+        for (let i = 0; i < committeeCountries.length; i++) {
+            let country = committeeCountries[i];
+            displayArrStatistics.push(
+                <div className='del-stat-item'>
+                    <div className='del-stat-name'>
+                        {country.name}
+                    </div>
+                    <div className='del-stat-bar'>
+                        {country.stats_primary ? (<div className={`stat stat-primary ${(checked.includes('p')) ? '' : 'invisible'}`} style={{width: ((parseInt(country.stats_primary) / highestVal) * 100) + '%'}}>{country.stats_primary + 'm'}</div>) : ''}
+                        {country.stats_secondary ? (<div className={`stat stat-secondary ${(checked.includes('s')) ? '' : 'invisible'}`} style={{width: ((country.stats_secondary / highestVal) * 100) + '%'}}>{country.stats_secondary + 'm'}</div>) : ''}
+                        {country.stats_moderated ? (<div className={`stat stat-other ${(checked.includes('c')) ? '' : 'invisible'}`} style={{width: ((country.stats_moderated / highestVal) * 100) + '%'}}>{country.stats_moderated + 'm'}</div>) : ''}
+                    </div>
+                </div>
+            );
+        }
+        setDisplayStatistics(displayArrStatistics);   
+    } , [refresh, committeeCountries, checked])
 
     return loaded && (
         <div>
@@ -383,7 +424,7 @@ const Preferences = () => {
                                         </div>
                                     </div>
                                     <div className='del-stat-data'>
-                                        yur
+                                        {displayStatistics}
                                     </div>
                                 </div>
                             </div>

@@ -99,7 +99,6 @@ const Chair = () => {
     }
 
     // exists to persist value to the database
-
     const persistMiddleware = (next, value) => {
 
         // check if there is a difference between db state vs this state
@@ -125,7 +124,10 @@ const Chair = () => {
         if (next === 'link') {
             history.push('/committee/dashboard');
         }
+    }
 
+    const openCaucus = () => {
+        persistMiddleware('component', 'active-caucus');
     }
 
     return (
@@ -199,7 +201,8 @@ const Chair = () => {
                         updateCountry={handleRollCallUpdates} />
                 ): ''}
                 {(component === 'motions') ? (
-                    <RecordMotions />
+                    <RecordMotions
+                        toCaucus={openCaucus} />
                 ): ''}
                 {(component === 'speakers') ? (
                     <Speakers />

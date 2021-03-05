@@ -4,9 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { useCommitteeContext } from '../contexts/CommitteeContext';
 
 const RecordMotions = (props) => {
-    const { getMotionsList, setMotionsList } = useCommitteeContext();
+    const { getMotionsList, setMotionsList, setCaucus, getCaucus } = useCommitteeContext();
 
-    const [displayNotification, setDisplayNotification] = useState(true);
+    const [displayNotification, setDisplayNotification] = useState(getCaucus() ? true : false);
     
     const [displayMotions, setDisplayMotions] = useState([]);
     const [trigger, setTrigger] = useState(false);
@@ -117,6 +117,24 @@ const RecordMotions = (props) => {
         }, (200));
     }
 
+    const handleToCaucus = (data, id) => {
+        const { type, total, speaking, topic } = data;
+
+        setCaucus({
+            type: type,
+            topic: topic,
+            speakers_list: [],
+            current_speaker: {},
+            time_speaker: (!(type === 'Unmoderated Caucus') ? speaking : 'n/a'),
+            time_total: (!(type === 'Round Table') ? total : 'n/a'),
+            time_elapsed: '',
+        });
+
+        deleteMotion(id);
+
+        props.toCaucus();
+    }
+
     useEffect(() => {
         let displayArray = [];
 
@@ -141,7 +159,8 @@ const RecordMotions = (props) => {
                     type={getType}
                     setType={setType}
                     topic={getTopic}
-                    setTopic={setTopic} />
+                    setTopic={setTopic}
+                    submit={handleToCaucus} />
             )
         }
         

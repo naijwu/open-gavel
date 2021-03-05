@@ -5,7 +5,7 @@ const MotionItem = (props) => {
     const [type, setType] = useState(props.type(props.id));
     const [total, setTotal] = useState(props.total(props.id));
     const [speaking, setSpeaking] = useState(props.speaking(props.id));
-    const [topic, setTopic] = useState(props.speaking(props.id));
+    const [topic, setTopic] = useState(props.topic(props.id));
 
     const updateTotal = (e) => {
         props.setTotal(e.target.value, props.id);
@@ -31,6 +31,19 @@ const MotionItem = (props) => {
         props.delete(props.id);
     }
 
+    const handleSubmit = () => {
+        // checking
+        if(type === 'Moderated Caucus' && (total && speaking && topic)) {
+            props.submit({type, total, speaking, topic}, props.id);
+        } else if (type==='Unmoderated Caucus' && (total && topic)) {
+            props.submit({type, total, topic}, props.id);
+        } else if (type==='Round Table' && (speaking && topic)) {
+            props.submit({type, speaking, topic}, props.id);
+        } else {
+            console.log('form error');
+        }
+    }
+
     return (
         <div className={`motion-item ${props.id}`}>
             <div className='motion-edit'>
@@ -44,10 +57,12 @@ const MotionItem = (props) => {
                         </select>
                     </div>
                     <div className='time-input'>
-                        <div className='input-group'>
-                            Total Time
-                            <input value={total} onChange={e=>updateTotal(e)} type='text' />
-                        </div>
+                        {(type === 'Moderated Caucus' || type === 'Unmoderated Caucus') ? (
+                            <div className='input-group'>
+                                Total Time
+                                <input value={total} onChange={e=>updateTotal(e)} type='text' />
+                            </div>
+                        ) : ''}
                         {(type === 'Moderated Caucus' || type === 'Round Table') ? (
                             <div className='input-group'>
                                 Speaking Time
@@ -60,14 +75,14 @@ const MotionItem = (props) => {
                         <input value={topic} onChange={e=>updateTopic(e)} type='text' />
                     </div>
                 </div>
-                <div className='motion-action'>
+                <div className='motion-action' onClick={e=>handleSubmit()}>
                     To Caucus
                 </div>
             </div>
-            {((type === 'Unmoderated Caucus' || type === 'Round Table') && (total && speaking && topic)) ? (
+            {((type === 'Round Table' || type === 'Moderated Caucus') && (total && speaking && topic)) ? (
                 <div className='motion-preview'>
                     <p>
-                        {total}:{speaking} {type} on {topic}
+                        {total}:{speaking} on {topic}
                     </p>
                 </div>
             ) : (

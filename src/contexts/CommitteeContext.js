@@ -21,6 +21,24 @@ export function CommitteeProvider({ children }) {
     //     default_drawer_position,
     //     auto_start_speaker_timer,
     //     dark_mode,
+    //     auto_start
+    // }
+
+    // Caucus: {
+    //     type: moderated/unmoderated/round-table
+    //     topic:
+    //     speakers_list: []
+    //     current_speaker: 
+    //     time_speaker:
+    //     time_total: 
+    //     time_elapsed:
+    // }
+
+    // Speakers: {
+    //     type: primary/secondary/single
+    //     current_speaker: 
+    //     time_elapsed: 
+    //     time_total:
     // }
 
     function initialize(data) {
@@ -64,6 +82,9 @@ export function CommitteeProvider({ children }) {
         sessionStorage.removeItem('statistics');
         sessionStorage.removeItem('pushNext');
         sessionStorage.removeItem('motions');
+        sessionStorage.removeItem('caucus');
+        sessionStorage.removeItem('speakers');
+        sessionStorage.removeItem('settings');
     }
 
     function getCountries() {
@@ -110,6 +131,57 @@ export function CommitteeProvider({ children }) {
         }
     }
 
+    function setCaucus(data) {
+        sessionStorage.setItem('caucus', JSON.stringify(data));
+    }
+
+    function getCaucus() {
+        let caucus = sessionStorage.getItem('caucus');
+        if(!caucus) {
+            return null;
+        } else {
+            return JSON.parse(caucus);
+        }
+    }
+
+    function setSpeakers(data) {
+        sessionStorage.setItem('speakers', JSON.stringify(data));
+    }
+
+    function getSpeakers() {
+        let speakers = sessionStorage.getItem('speakers');
+        if(!speakers) {
+            return null;
+        } else {
+            return JSON.parse(speakers);
+        }
+    }
+
+    function setSettings(data) {
+        if(data === 'new') {
+            let initialData = {
+                default_start_screen: 'blank',
+                hide_all_notifications: false,
+                default_drawer_position: 'open',
+                auto_start_speaker_timer: false,
+                dark_mode: false,
+                auto_start: false,
+            }
+            sessionStorage.setItem('settings', JSON.stringify(initialData));
+        } else {
+            sessionStorage.setItem('settings', JSON.stringify(data));
+        }
+    }
+
+    function getSettings() {
+        let settings = sessionStorage.getItem('setting');
+        if(!settings) {
+            return null;
+        } else {
+            return JSON.parse(settings);
+        }
+    }
+
     const value = {
         initialize,
         persist,
@@ -122,6 +194,15 @@ export function CommitteeProvider({ children }) {
 
         getMotionsList,
         setMotionsList,
+
+        getCaucus,
+        setCaucus,
+
+        getSpeakers,
+        setSpeakers,
+
+        getSettings,
+        setSettings,
 
         setPushNext,
         getPushNext,
