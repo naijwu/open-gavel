@@ -79,10 +79,16 @@ const MotionItem = (props) => {
                     To Caucus
                 </div>
             </div>
-            {((type === 'Round Table' || type === 'Moderated Caucus') && (total && speaking && topic)) ? (
+            {((type === 'Moderated Caucus') && (total && speaking && topic)) ? (
                 <div className='motion-preview'>
                     <p>
                         {total}:{speaking} on {topic}
+                    </p>
+                </div>
+            ) : ( (type === 'Round Table' && (total && speaking && topic)) ? (
+                <div className='motion-preview'>
+                    <p>
+                        {speaking} min Roundtable on {topic}
                     </p>
                 </div>
             ) : (
@@ -93,6 +99,7 @@ const MotionItem = (props) => {
                         </p>
                     </div>
                 )
+            )
             )}
             <div className='subtle-delete' onClick={e=>handleDelete()}>Remove</div>
         </div>
