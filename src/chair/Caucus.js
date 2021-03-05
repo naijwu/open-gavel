@@ -20,7 +20,7 @@ const Caucus = (props) => {
     const [refresh, setRefresh] = useState(true);
 
     // speaker management hooks
-    const [activeSpeaker, setActiveSpeaker] = useState(getCaucus().current_speaker.name ? (getCaucus().current_speaker ? getCaucus().current_speaker : '') : ''); // hooks OBJECT of the country
+    const [activeSpeaker, setActiveSpeaker] = useState(caucusExists ? (getCaucus() ? (getCaucus().current_speaker ? getCaucus().current_speaker : '') : '') : ''); // hooks OBJECT of the country
     const [elapsedTime, setElapsedTime] = useState(0);
     const [elapsedTotalTime, setElapsedTotalTime] = useState(0);
     const [speakerStatus, setSpeakerStatus] = useState('');
@@ -31,7 +31,6 @@ const Caucus = (props) => {
         // switch active speaker
         setSearch('');
         setElapsedTime(0);
-        clearTimeout(speakerTimer);
 
         let newCaucusInfo = caucusInfo;
         newCaucusInfo.current_speaker = countries.find(item=>item._id===id);
@@ -108,16 +107,7 @@ const Caucus = (props) => {
     }
     
     let totalTimer = setTimeout(timerCycleTotal, 1000); 
-
-    let speakerTimer = setInterval(function(){
-        if(speakerStatus !== 'pause') {
-            setElapsedTime(elapsedTime + 1);
-        }
-      
-        if(speakerStatus !== 'stop'){ 
-          clearInterval(speakerTimer)
-        }
-    }, 1000);
+    let speakerTimer = setTimeout(timerCycleSpeaker, 1000); 
 
     return caucusExists ? (
         <div className='app-inner'>
