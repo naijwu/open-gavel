@@ -515,6 +515,7 @@
     border-radius:4px;
     background:#eee;
     cursor:pointer;
+    user-select: none;
 }
 
 .speaker .options .media-button:hover {
@@ -586,10 +587,20 @@
   border-width:1px;
   border-color:#ccc;
   cursor:pointer;
+  user-select:none;
+}
+
+.caucus .manage-speaker .speaker-list .speaker-item.active {
+    background:var(--colour-blue-light);
+    cursor:default;
 }
 
 .caucus .manage-speaker .speaker-list .speaker-item:hover {
   background:#ccc;
+}
+
+.caucus .manage-speaker .speaker-list .speaker-item.active:hover {
+    background:var(--colour-blue-light);
 }
 
 .caucus .manage-speaker .speaker-list .speaker-item:last-child {

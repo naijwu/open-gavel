@@ -9,35 +9,26 @@ const Caucus = (props) => {
         return [];
     }
 
-    const { getCountries, getCaucus, setCaucus } = useCommitteeContext();
+    const { getCountries, setCountries, setPushNext, getCaucus, setCaucus } = useCommitteeContext();
 
     const [caucusExists, setCaucusExists] = useState(false);
 
     // display countries hooks
     const [displayCountries, setDisplayCountries] = useState([]);
-    const [countries, setCountries] = useState(getCountries() ? getCountries() : handleNullError());
+    const [countries, setCountriesList] = useState(getCountries() ? getCountries() : handleNullError());
     const [search, setSearch ] = useState('');
     const [refresh, setRefresh] = useState(true);
 
     // speaker management hooks
     const [activeSpeaker, setActiveSpeaker] = useState(caucusExists ? (getCaucus() ? (getCaucus().current_speaker ? getCaucus().current_speaker : '') : '') : ''); // hooks OBJECT of the country
+   
     const [elapsedTime, setElapsedTime] = useState(0);
     const [elapsedTotalTime, setElapsedTotalTime] = useState(0);
-    const [speakerStatus, setSpeakerStatus] = useState('');
+
+    const [timerID, setTimerID] = useState([]); // use to set/clear interval function
+    const [isTicking, setIsTicking] = useState(false); // false if stopped, or before speaking  
 
     const caucusInfo = getCaucus();
-
-    const selectedSpeaker = (id) => {
-        // switch active speaker
-        setSearch('');
-        setElapsedTime(0);
-
-        let newCaucusInfo = caucusInfo;
-        newCaucusInfo.current_speaker = countries.find(item=>item._id===id);
-
-        setCaucus(newCaucusInfo);
-        setActiveSpeaker(newCaucusInfo.current_speaker);
-    }
 
     useEffect(() => {
         if(caucusInfo) {
@@ -63,7 +54,7 @@ const Caucus = (props) => {
                 if(countries[i].presence === 'voting' || countries[i].presence === 'present') {
                     if(countries[i].name.toLowerCase().search(search.toLowerCase()) > -1) {
                         display_array.push(
-                            <div key={countries[i]._id} className='speaker-item' onClick={e=>selectedSpeaker(countries[i]._id)}>
+                            <div key={countries[i]._id} className={`speaker-item ${(activeSpeaker._id === countries[i]._id) ? 'active' : ''}`} onClick={e=>selectedSpeaker(countries[i]._id)}>
                                 {countries[i].name}
                             </div>
                         );
@@ -74,7 +65,7 @@ const Caucus = (props) => {
             for(let i = 0; i < countries.length; i++) {
                 if(countries[i].presence === 'voting' || countries[i].presence === 'present') {
                     display_array.push(
-                        <div key={countries[i]._id} className='speaker-item' onClick={e=>selectedSpeaker(countries[i]._id)}>
+                        <div key={countries[i]._id} className={`speaker-item ${(activeSpeaker._id === countries[i]._id) ? 'active' : ''}`} onClick={e=>selectedSpeaker(countries[i]._id)}>
                             {countries[i].name}
                         </div>
                     );
@@ -83,31 +74,142 @@ const Caucus = (props) => {
         }
 
         setDisplayCountries(display_array);
-    }, [search]);
+    }, [search, activeSpeaker._id, countries]);
 
     const deleteCaucus = () => {
         setCaucusExists(false);
         setCaucus('');
     }
 
-    const stopSpeaker = () => {
-        setElapsedTime(0);
+
+    // timer functions
+
+    let speakerTime = elapsedTime ? elapsedTime : 0;
+    let totalTime = elapsedTotalTime ? elapsedTotalTime : 0;
+
+    // garbage cleaner
+    useEffect(() => {
+        if(!isTicking) {
+            for (let i = 0; i < timerID.length; i++ ) {
+                clearInterval(timerID[i]);
+            }
+            setTimerID([]);
+            setIsTicking(false);
+        } else {                                                console.log('New ticker ', timerID);
+        }
+
+    }, [isTicking]);
+
+    // ticker function -- invoked every second
+    function tick() {
+        totalTime += 1;
+        setElapsedTotalTime(totalTime);
+        speakerTime += 1;
+        setElapsedTime(speakerTime);
     }
 
-    // invoked every second
-    const timerCycleTotal = () => {
-        if(speakerStatus !== 'pause') {
-            setElapsedTotalTime(elapsedTotalTime + 1);
+    // country starts speaking
+    function startSpeaking() {
+        if(!isTicking) {
+            setIsTicking(true);
+
+            // only invoke if timer hasn't already started -- or else hell breaks loose, or something like that
+            const timer = setInterval(tick, 1000);
+
+            // hold in array just in case timer gets invoked twice -- must know ID in order to reset all timers
+            let timerIDs = timerID;
+            timerIDs.push(timer)
+            setTimerID(timerIDs);                                       console.log('Ticker started with ID', timer);
+
         }
     }
-    const timerCycleSpeaker = () => {
-        if(speakerStatus !== 'pause') {
-            setElapsedTime(elapsedTime + 1);
+
+    // country elapses time
+    function pauseSpeaking() {
+        if(isTicking) {
+        
+            setIsTicking(false);                                        console.log('Ticker stopped, ID', timerID[0]);
+        } else {
+            console.log('Divided by Zero', timerID)
         }
     }
+
+    function resetSpeaking() {
+        let timeToReset = elapsedTime;
+        let newElapsedTotalTime = elapsedTotalTime - timeToReset;
+        setElapsedTotalTime(newElapsedTotalTime);
+
+        // reset data
+        setElapsedTime(0);
+        
+        // stop (all) ticking
+        setIsTicking(false);                                            console.log('Reset all');
+    }
+
+    // new speaker gets selected
+    function selectedSpeaker(id) {
+
+        // check if *actually* new speaker
+        if(activeSpeaker ? (activeSpeaker._id !== id) : true) {
+
+            if(activeSpeaker) {
+                setPushNext('true');
     
-    let totalTimer = setTimeout(timerCycleTotal, 1000); 
-    let speakerTimer = setTimeout(timerCycleSpeaker, 1000); 
+                // save data (speaking statistic)
+                let countryToUpdate = countries.find(item=>item._id===activeSpeaker._id); // country to update
+                let updateCountry = {
+                    ...countryToUpdate,
+                    stats_moderated: countryToUpdate.stats_moderated + elapsedTime
+                };
+                console.log(countryToUpdate.name, elapsedTime);
+    
+                let updatedCountries = countries;
+                updatedCountries.splice(updatedCountries.indexOf(countryToUpdate), 1);
+                updatedCountries.push(updateCountry);
+                updatedCountries.sort((a, b) => (a.name > b.name) ? 1 : -1);
+                
+                setCountries(updatedCountries);
+            } 
+
+            // clear speaker time
+            setIsTicking(false);                                            console.log('New speaker selected');
+            
+            // switch active speaker
+            setSearch('');
+            setElapsedTime(0);
+
+            // update active speaker on session storage
+            let newCaucusInfo = caucusInfo;
+            let newCountry = countries.find(item=>item._id===id);
+            newCaucusInfo.current_speaker = newCountry;
+            setCaucus(newCaucusInfo); 
+            setActiveSpeaker(newCaucusInfo.current_speaker);
+        }
+    }
+
+    function expiredSpeaker () {
+        // called when speaker time expires
+
+    }
+
+    function expiredCaucus () {
+        // called when caucus time expires
+
+    }
+
+    // option for auto-start speaker timer
+    useEffect(() => {
+
+        // option toggle goes here
+        if (true) {
+            if(activeSpeaker) {
+                if(!isTicking) {
+                    startSpeaking();
+                }
+            }
+        }
+    }, [activeSpeaker._id]);
+    
 
     return caucusExists ? (
         <div className='app-inner'>
@@ -151,17 +253,17 @@ const Caucus = (props) => {
                                     </div>
                                 </div>
                                 <div className='options'>
-                                    <div className='media-button start' onClick={e=>setSpeakerStatus('start')}>
-                                        Start
-                                    </div>
-                                    <div className='media-button pause' onClick={e=>setSpeakerStatus('pause')}>
-                                        Pause
-                                    </div>
-                                    <div className='media-button pause' onClick={e=>{setElapsedTime(0); }}>
+                                    {(!isTicking) ? (
+                                        <div className='media-button start' onClick={e=>startSpeaking()}>
+                                            Start
+                                        </div>
+                                    ) : (
+                                        <div className='media-button pause' onClick={e=>pauseSpeaking()}>
+                                            Stop
+                                        </div>
+                                    )}
+                                    <div className='media-button pause' onClick={e=>resetSpeaking()}>
                                         Reset
-                                    </div>
-                                    <div className='media-button stop' onClick={e=>clearTimeout(speakerTimer)}>
-                                        Stop
                                     </div>
                                 </div>
                             </div>
