@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useCommitteeContext } from '../contexts/CommitteeContext';
 
+import SearchIcon from '../assets/icons/search.svg';
+
 const Caucus = (props) => {
 
     const handleNullError = () => {
@@ -26,7 +28,10 @@ const Caucus = (props) => {
     const [elapsedTotalTime, setElapsedTotalTime] = useState(0);
 
     const [timerID, setTimerID] = useState([]); // use to set/clear interval function
-    const [isTicking, setIsTicking] = useState(false); // false if stopped, or before speaking  
+    const [isTicking, setIsTicking] = useState(false); // false if stopped, or before speaking
+
+    const [isExpiredSpeaker, setIsExpiredSpeaker] = useState(false);
+    const [isExpiredCaucus, setIsExpiredCaucus] = useState(false);
 
     const caucusInfo = getCaucus();
 
@@ -79,6 +84,7 @@ const Caucus = (props) => {
     const deleteCaucus = () => {
         setCaucusExists(false);
         setCaucus('');
+        props.toMotions();
     }
 
 
@@ -104,30 +110,43 @@ const Caucus = (props) => {
     function tick() {
         totalTime += 1;
         setElapsedTotalTime(totalTime);
+        if(totalTime > (caucusInfo.time_total * 60)) {
+            expiredCaucus();
+        }
         speakerTime += 1;
+        if(speakerTime === (caucusInfo.time_speaker * 60)) { // more strict on expiry time than speaker
+            expiredSpeaker();
+        }
         setElapsedTime(speakerTime);
     }
 
     // country starts speaking
     function startSpeaking() {
         if(!isTicking) {
-            setIsTicking(true);
 
-            // only invoke if timer hasn't already started -- or else hell breaks loose, or something like that
-            const timer = setInterval(tick, 1000);
+            // allowed to speak (not expired)
+            if(!isExpiredSpeaker) {
 
-            // hold in array just in case timer gets invoked twice -- must know ID in order to reset all timers
-            let timerIDs = timerID;
-            timerIDs.push(timer)
-            setTimerID(timerIDs);                                       console.log('Ticker started with ID', timer);
-
+                // is there time to speak (caucus not expired)
+                if(!isExpiredCaucus) {
+                    setIsTicking(true);
+        
+                    // only invoke if timer hasn't already started -- or else hell breaks loose, or something like that
+                    const timer = setInterval(tick, 1000);
+        
+                    // hold in array just in case timer gets invoked twice -- must know ID in order to reset all timers
+                    let timerIDs = timerID;
+                    timerIDs.push(timer)
+                    setTimerID(timerIDs);                                       console.log('Ticker started with ID', timer);
+                }
+    
+            }
         }
     }
 
     // country elapses time
     function pauseSpeaking() {
         if(isTicking) {
-        
             setIsTicking(false);                                        console.log('Ticker stopped, ID', timerID[0]);
         } else {
             console.log('Divided by Zero', timerID)
@@ -141,6 +160,10 @@ const Caucus = (props) => {
 
         // reset data
         setElapsedTime(0);
+        setIsExpiredSpeaker(false);
+        if(newElapsedTotalTime < (caucusInfo.time_total * 60)) {
+            setIsExpiredCaucus(false);
+        }
         
         // stop (all) ticking
         setIsTicking(false);                                            console.log('Reset all');
@@ -172,6 +195,7 @@ const Caucus = (props) => {
             } 
 
             // clear speaker time
+            setIsExpiredSpeaker(false);
             setIsTicking(false);                                            console.log('New speaker selected');
             
             // switch active speaker
@@ -190,11 +214,49 @@ const Caucus = (props) => {
     function expiredSpeaker () {
         // called when speaker time expires
 
+        setIsTicking(false);
+        setIsExpiredSpeaker(true);
     }
 
     function expiredCaucus () {
         // called when caucus time expires
 
+        setIsTicking(false);
+        setIsExpiredCaucus(true);
+        setIsExpiredSpeaker(true); // also expire speaker
+    }
+
+    function startUnmod() {
+        
+        if(!isTicking) {
+            setActiveSpeaker({});
+
+            // allowed to speak (not expired)
+            if(!isExpiredCaucus) {
+                setIsTicking(true);
+        
+                // only invoke if timer hasn't already started -- or else hell breaks loose, or something like that
+                const timer = setInterval(tick, 1000);
+        
+                // hold in array just in case timer gets invoked twice -- must know ID in order to reset all timers
+                let timerIDs = timerID;
+                timerIDs.push(timer)
+                setTimerID(timerIDs);                                       console.log('Ticker started with ID', timer);
+    
+            }
+        }
+    }
+
+    function pauseUnmod() {
+        if(isTicking) {
+            setIsTicking(false);
+        }
+    }
+
+    function resetUnmod() {
+        setElapsedTotalTime(0);
+        setIsExpiredCaucus(false);
+        setIsTicking(false);
     }
 
     // option for auto-start speaker timer
@@ -214,7 +276,7 @@ const Caucus = (props) => {
     return caucusExists ? (
         <div className='app-inner'>
             <div className='app-inner-inner'>
-                <h1>Active Caucus</h1>
+                <h1>{caucusInfo.type}</h1>
                 <div className='caucus'>
 
                     <div className='information'>
@@ -232,62 +294,98 @@ const Caucus = (props) => {
 
                         </div>
                         <div className='information-timer'>
-                            <div className='elapsed' style={{width: ((elapsedTotalTime) / parseInt(caucusInfo.time_total * 60) * 100) + '%'}}></div>
+                            <div className={`elapsed ${(isExpiredCaucus ? 'expired' : '')}`} style={{width: ((elapsedTotalTime) / parseInt(caucusInfo.time_total * 60) * 100) + '%'}}></div>
                         </div>
                     </div>
-                    <div className='speaker'>
-                        {(activeSpeaker) ? (
-                            <div className='speaker-inner'>
-                                <div className='flag'>
-                                    <img src={`https://www.countryflags.io/${activeSpeaker.country_code}/flat/64.png`} />
-                                </div>
-                                <div className='name'>
-                                    {activeSpeaker.name}
-                                </div>
-                                <div className='timer'>
-                                    <div className='timer-band'>
-                                        <div className='elapsed' style={{width: ((elapsedTime) / parseInt(caucusInfo.time_speaker * 60) * 100) + '%'}}></div>
+                    {(caucusInfo.type === 'Moderated Caucus' || caucusInfo.type === 'Round Table') ? (
+                    <>
+                        <div className='speaker'>
+                            {(activeSpeaker) ? (
+                                <div className='speaker-inner'>
+                                    <div className='flag'>
+                                        <img src={`https://www.countryflags.io/${activeSpeaker.country_code}/flat/64.png`} />
                                     </div>
-                                    <div className='timer-text'>
-                                        {Math.floor(elapsedTime / 60)} minutes {elapsedTime - Math.floor(elapsedTime / 60) * 60} seconds
+                                    <div className='name'>
+                                        {activeSpeaker.name}
                                     </div>
-                                </div>
-                                <div className='options'>
-                                    {(!isTicking) ? (
-                                        <div className='media-button start' onClick={e=>startSpeaking()}>
-                                            Start
+                                    <div className='timer'>
+                                        <div className='timer-band'>
+                                            <div className={`elapsed ${(isExpiredSpeaker ? 'expired' : '')}`} style={{width: ((elapsedTime) / parseInt(caucusInfo.time_speaker * 60) * 100) + '%'}}></div>
                                         </div>
-                                    ) : (
-                                        <div className='media-button pause' onClick={e=>pauseSpeaking()}>
-                                            Stop
+                                        <div className='timer-text'>
+                                            {Math.floor(elapsedTime / 60)} minutes {elapsedTime - Math.floor(elapsedTime / 60) * 60} seconds
                                         </div>
-                                    )}
-                                    <div className='media-button pause' onClick={e=>resetSpeaking()}>
-                                        Reset
+                                    </div>
+                                    <div className='options'>
+                                        {(!isTicking) ? (
+                                            <div className='media-button start' onClick={e=>startSpeaking()}>
+                                                Start
+                                            </div>
+                                        ) : (
+                                            <div className='media-button pause' onClick={e=>pauseSpeaking()}>
+                                                Stop
+                                            </div>
+                                        )}
+                                        <div className='media-button pause' onClick={e=>resetSpeaking()}>
+                                            Reset
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className='no-speaker'>
+                                    Select a Speaker
+                                </div>
+                            )}
+                        </div>
+                        <div className='caucus-action-tray'>
+                            <div className='manage-speaker'>
+                                <h3>Select Speaker</h3>
+                                <div className='speaker-container'>
+                                    <div className='speaker-search'>
+                                        <img src={SearchIcon} />
+                                        <input type="text" value={search} onChange={e=>setSearch(e.target.value.replace(/\\/g, ''))} />
+                                    </div>
+                                    <div className='speaker-list'>
+                                        {displayCountries}
                                     </div>
                                 </div>
                             </div>
-                        ) : ''}
-                    </div>
-                    <div className='caucus-action-tray'>
-                        <div className='manage-speaker'>
-                            <h3>Select Speaker</h3>
-                            <div className='speaker-container'>
-                                <div className='speaker-search'>
-                                    <input type="text" value={search} onChange={e=>setSearch(e.target.value.replace(/\\/g, ''))} />
-                                </div>
-                                <div className='speaker-list'>
-                                    {displayCountries}
+                            <div className='equalizaaa'>
+                                <div className='manage-caucus'>
+                                    <h3>Manage Caucus</h3>
+                                    <div className='delete-caucus' onClick={e=>deleteCaucus()}>Elapse Caucus</div>
                                 </div>
                             </div>
                         </div>
-                        <div className='equalizaaa'>
-                            <div className='manage-caucus'>
-                                <h3>Manage Caucus</h3>
-                                <div className='delete-caucus' onClick={e=>deleteCaucus()}>Elapse Caucus</div>
+                    </>
+                    ) : (
+                    // Only for Unmoderated Caucus
+                    <>
+                        <div className='unmod-time'>
+                            <div className='timer-text'>
+                                {Math.floor(elapsedTotalTime / 60)} minutes {elapsedTotalTime - Math.floor(elapsedTotalTime / 60) * 60} seconds
+                            </div>
+                            <div className='options'>
+                                {(!isTicking) ? (
+                                    <div className='media-button start' onClick={e=>startUnmod()}>
+                                        Start
+                                    </div>
+                                ) : (
+                                    <div className='media-button pause' onClick={e=>pauseUnmod()}>
+                                        Stop
+                                    </div>
+                                )}
+                                <div className='media-button pause' onClick={e=>resetUnmod()}>
+                                    Reset
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <div className='manage-caucus'>
+                            <h3>Manage Caucus</h3>
+                            <div className='delete-caucus' onClick={e=>deleteCaucus()}>Elapse Caucus</div>
+                        </div>
+                    </>
+                    )}
                 </div>
             </div>
         </div>

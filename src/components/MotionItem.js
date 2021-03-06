@@ -34,7 +34,9 @@ const MotionItem = (props) => {
     const handleSubmit = () => {
         // checking
         if(type === 'Moderated Caucus' && (total && speaking && topic)) {
-            props.submit({type, total, speaking, topic}, props.id);
+            if(total >= speaking) {
+                props.submit({type, total, speaking, topic}, props.id);
+            }
         } else if (type==='Unmoderated Caucus' && (total && topic)) {
             props.submit({type, total, topic}, props.id);
         } else if (type==='Round Table' && (speaking && topic)) {

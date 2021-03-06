@@ -10,6 +10,7 @@ import RollCall from './chair/RollCall';
 import RecordMotions from './chair/RecordMotions';
 import Speakers from './chair/Speakers';
 import Caucus from './chair/Caucus';
+import Options from './chair/Options';
 
 import ArrowLeft from './assets/icons/arrow-left.svg';
 import Edit from './assets/icons/edit.svg';
@@ -18,6 +19,7 @@ import Users from './assets/icons/users.svg';
 import User from './assets/icons/user.svg';
 import Settings from './assets/icons/settings.svg';
 import Sliders from './assets/icons/sliders.svg';
+import LinkOut from './assets/icons/external-link.svg'
 
 const Chair = () => {
     const { initialize, getCountries, getStatistics, setStatistics, setCountries, setPushNext, getPushNext, persist } = useCommitteeContext();
@@ -130,6 +132,10 @@ const Chair = () => {
         persistMiddleware('component', 'active-caucus');
     }
 
+    const openMotions = () => {
+        persistMiddleware('component', 'motions');
+    }
+
     return (
         <div className={`app-container slid${slidOut}`}>
             <div className={`side ${slidOut} hover${slidOutHover}`}>
@@ -164,13 +170,14 @@ const Chair = () => {
 
                     </div>
                     <div className='utility' onMouseOver={e=>setSlidOutHover(true)} onMouseLeave={e=>setSlidOutHover(false)} >
-                        <div className='utility-text'>
+                        <div className='utility-text' onClick={e => persistMiddleware('component', 'options')}>
                             <img src={Settings} />
                             Program Options
                         </div>
-                        <div className='utility-text' onClick={e=>persistMiddleware('link', '/committee/dashboard')}>
+                        <div className='utility-text external' onClick={e=>persistMiddleware('link', '/committee/dashboard')}>
                             <img src={Sliders} />
-                            Dashboard
+                            <div className='internetspace'>Dashboard</div>
+                            <img className='mini-icon' src={LinkOut} />
                         </div>
                         <div className='utility-text' onClick={e=>setSlidOut((slidOut) ? false : true)}>
                             <img className='arrow' src={ArrowLeft} />
@@ -188,7 +195,6 @@ const Chair = () => {
                 </div>
             </div>
 
-            {/* Need to have OGContext here (for committee states) */}
             <div className='app-main'>
                 {(component === 'default') ? (
                     <div className='centre-stamp'>
@@ -208,7 +214,11 @@ const Chair = () => {
                     <Speakers />
                 ): ''}
                 {(component === 'active-caucus') ? (
-                    <Caucus />
+                    <Caucus
+                        toMotions={openMotions} />
+                ): ''}
+                {(component === 'options') ? (
+                    <Options />
                 ): ''}
             </div>
         </div>
