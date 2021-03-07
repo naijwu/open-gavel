@@ -45,7 +45,7 @@ export function CommitteeProvider({ children }) {
         // pull data from database
         sessionStorage.setItem('countries', JSON.stringify(data.countries));
         sessionStorage.setItem('statistics', JSON.stringify(data.statistics));
-        sessionStorage.setItem('settings', JSON.stringify(data.settings));
+        sessionStorage.setItem('app_settings', JSON.stringify(data.app_settings));
         sessionStorage.setItem('pushNext', 'false');
     }
 
@@ -85,7 +85,7 @@ export function CommitteeProvider({ children }) {
         sessionStorage.removeItem('motions');
         sessionStorage.removeItem('caucus');
         sessionStorage.removeItem('speakers');
-        sessionStorage.removeItem('settings');
+        sessionStorage.removeItem('app_settings');
     }
 
     function getCountries() {
@@ -161,20 +161,20 @@ export function CommitteeProvider({ children }) {
     function setSettings(data) {
         if(data === 'new') {
             let initialData = {
-                default_start_screen: 'blank',
-                hide_all_notifications: false,
-                default_drawer_position: 'open',
+                default_start_screen: 'Blank',
+                default_drawer_position: 'Open',
+                hide_all_notice: false,
                 auto_start_speaker_timer: false,
                 dark_mode: false,
             }
-            sessionStorage.setItem('settings', JSON.stringify(initialData));
+            sessionStorage.setItem('app_settings', JSON.stringify(initialData));
         } else {
-            sessionStorage.setItem('settings', JSON.stringify(data));
+            sessionStorage.setItem('app_settings', JSON.stringify(data));
         }
     }
 
     function getSettings() {
-        let settings = sessionStorage.getItem('setting');
+        let settings = sessionStorage.getItem('app_settings');
         if(!settings) {
             return null;
         } else {

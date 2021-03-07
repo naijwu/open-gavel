@@ -4,9 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { useCommitteeContext } from '../contexts/CommitteeContext';
 
 const RecordMotions = (props) => {
-    const { getMotionsList, setMotionsList, setCaucus, getCaucus } = useCommitteeContext();
+    const { getMotionsList, setMotionsList, setCaucus, getCaucus, getSettings } = useCommitteeContext();
 
-    const [displayNotification, setDisplayNotification] = useState(getCaucus() ? true : false);
+    const [displayNotification, setDisplayNotification] = useState(getSettings() ? ((getSettings().hide_all_notifications === 'true') ? false : (getCaucus() ? true : false)) : false);
     
     const [displayMotions, setDisplayMotions] = useState([]);
     const [trigger, setTrigger] = useState(false);
@@ -179,11 +179,11 @@ const RecordMotions = (props) => {
                         <h3>Notice: Ongoing Caucus</h3>
                         <p>
                             There is already an active caucus in session (its time has not yet elapsed). Adding any motions to caucus will replace 
-                            the current one.
+                            the current one. You can hide all notices in the program options.
                         </p>
                         <div className='action'>
                             <div className='noti-text-link' onClick={e=>closeNotification()}>Got it!</div>
-                            <div className='noti-text-link'>Hide future notifications</div>
+                            <div className='noti-text-link' onClick={e=>props.toOptions()}>Go to options</div>
                         </div>
                     </div>
                 ) : ''}

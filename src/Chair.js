@@ -12,29 +12,31 @@ import Speakers from './chair/Speakers';
 import Caucus from './chair/Caucus';
 import Options from './chair/Options';
 
-import ArrowLeft from './assets/icons/arrow-left.svg';
-import Edit from './assets/icons/edit.svg';
-import Layers from './assets/icons/layers.svg';
-import Users from './assets/icons/users.svg';
-import User from './assets/icons/user.svg';
-import Settings from './assets/icons/settings.svg';
-import Sliders from './assets/icons/sliders.svg';
-import LinkOut from './assets/icons/external-link.svg'
+const displaySwitchboard = {
+    'Blank': 'default',
+    'Roll Call': 'rollcall',
+    'Speakers': 'speakers',
+    'Motions': 'motions',
+    'Active Caucus': 'active-caucus',
+};
 
 const Chair = () => {
-    const { initialize, getCountries, getStatistics, setStatistics, setCountries, setPushNext, getPushNext, persist } = useCommitteeContext();
+    const { initialize, getCountries, getStatistics, setStatistics, setCountries, setPushNext, getPushNext, getSettings, persist } = useCommitteeContext();
     const { currentUser, getTokenData } = useAuthContext();
 
     const history = useHistory();
+    const userData = getTokenData();
 
     const [committeeCountries, setCommitteeCountries] = useState([]);
     const [committeeStatistics, setCommitteeStatistics] = useState([]);
 
-    const [component, setComponent] = useState('default'); 
-    const [slidOut, setSlidOut] = useState(true); 
+    const [component, setComponent] = useState(getSettings() ? displaySwitchboard[getSettings().default_start_screen] : 'default'); 
+    const [slidOut, setSlidOut] = useState((getSettings() ? getSettings().default_drawer_position === 'Opened' : true) ? true : false); 
     const [slidOutHover, setSlidOutHover] = useState(false); 
 
-    const userData = getTokenData();
+    const [settingRefresh, setSettingRefresh] = useState(true);
+
+    const [isDarkMode, setIsDarkMode] = useState(getSettings() ? getSettings().dark_mode === 'true' : false);
 
     // only at the very beginning
     useEffect(() => {
@@ -47,14 +49,15 @@ const Chair = () => {
         }).then((res) => {
             // set into session
             let countries = res.data.countries;
-
+            let statistics = res.data.statistics;
+            let settings = res.data.settings;
+            
             setCommitteeCountries(countries.sort((a, b) => (a.name > b.name) ? 1 : -1));
-            setCommitteeStatistics(res.data.statistics);
-
+            setCommitteeStatistics(statistics);
             initialize({
                 countries: countries,
-                statistics: res.data.statistics,
-                settings: res.data.settings,
+                statistics: statistics,
+                app_settings: settings,
             });
 
         }).catch((err) => {
@@ -62,6 +65,21 @@ const Chair = () => {
         });
 
     }, []);
+
+    useEffect(() => {
+        // dyanmically changing settings (drawer pos. and dark mode -- other option changes don't go here since their changes can't be instantly seen)
+        setSlidOut(getSettings().default_drawer_position === 'Opened');
+        setIsDarkMode(getSettings().dark_mode === 'true');
+    }, [settingRefresh]);
+
+    // darkmode control hehehe
+    useEffect(() => {
+        if(isDarkMode) {
+
+        } else {
+
+        }
+    }, [isDarkMode])
 
     const handleRollCallUpdates = (country, status) => {
         // makes changes
@@ -103,6 +121,7 @@ const Chair = () => {
             persist({
                 statistics: getStatistics(),
                 countries: getCountries(),
+                settings: getSettings(),
             });
         } 
 
@@ -121,6 +140,10 @@ const Chair = () => {
 
     const openCaucus = () => {
         persistMiddleware('component', 'active-caucus');
+    }
+
+    const openOptions = () => {
+        persistMiddleware('component', 'options');
     }
 
     const elapseCaucus = (data) => {
@@ -160,32 +183,41 @@ const Chair = () => {
         }
     }
 
+    function handleSaveSettings(data) {
+        setSettingRefresh(settingRefresh ? false : true);
+        persist({
+            statistics: getStatistics(),
+            countries: getCountries(),
+            settings: getSettings(),
+        });
+    }
+
     return (
-        <div className={`app-container slid${slidOut}`}>
+        <div className={`app-container slid${slidOut} dm${isDarkMode}`}>
             <div className={`side ${slidOut} hover${slidOutHover}`}>
                 <div className='side-inner'>
                     <div className='tabs' onMouseOver={e=>setSlidOutHover(true)} onMouseLeave={e=>setSlidOutHover(false)} >
                         <div className='tab'>
                             <div className={`tab-text ${(component === 'rollcall') ? 'active' : ''}`} onClick={e => persistMiddleware('component', 'rollcall')}>
-                                <img src={Users} />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                                 Roll Call
                             </div>
                         </div>
                         <div className='tab'>
                             <div className={`tab-text ${(component === 'speakers') ? 'active' : ''}`} onClick={e => persistMiddleware('component', 'speakers')}>
-                              <img src={User} />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                 Speakers
                             </div>
                         </div>
                         <div className='tab'>
                             <div className={`tab-text ${(component === 'motions') ? 'active' : ''}`} onClick={e => persistMiddleware('component', 'motions')}>
-                                <img src={Edit} />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                 Motions
                             </div>
                         </div>
                         <div className='tab'>
                             <div className={`tab-text ${(component === 'active-caucus') ? 'active' : ''}`} onClick={e => persistMiddleware('component', 'active-caucus')}>
-                                <img src={Layers} />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                                 Active Caucus
                             </div>
                         </div>
@@ -195,16 +227,16 @@ const Chair = () => {
                     </div>
                     <div className='utility' onMouseOver={e=>setSlidOutHover(true)} onMouseLeave={e=>setSlidOutHover(false)} >
                         <div className='utility-text' onClick={e => persistMiddleware('component', 'options')}>
-                            <img src={Settings} />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                             Program Options
                         </div>
                         <div className='utility-text external' onClick={e=>persistMiddleware('link', '/committee/dashboard')}>
-                            <img src={Sliders} />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
                             <div className='internetspace'>Dashboard</div>
-                            <img className='mini-icon' src={LinkOut} />
+                            <svg className='mini-icon' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" ><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                         </div>
                         <div className='utility-text' onClick={e=>setSlidOut((slidOut) ? false : true)}>
-                            <img className='arrow' src={ArrowLeft} />
+                            <svg className='arrow' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                             {(slidOut) ? (
                                 <>
                                     Hide Panel
@@ -232,7 +264,8 @@ const Chair = () => {
                 ): ''}
                 {(component === 'motions') ? (
                     <RecordMotions
-                        toCaucus={openCaucus} />
+                        toCaucus={openCaucus}
+                        toOptions={openOptions} />
                 ): ''}
                 {(component === 'speakers') ? (
                     <Speakers />
@@ -242,7 +275,8 @@ const Chair = () => {
                         elapseCaucus={elapseCaucus} />
                 ): ''}
                 {(component === 'options') ? (
-                    <Options />
+                    <Options
+                        pushSettings={handleSaveSettings} />
                 ): ''}
             </div>
         </div>

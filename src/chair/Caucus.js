@@ -11,7 +11,7 @@ const Caucus = (props) => {
         return [];
     }
 
-    const { getCountries, setCountries, setPushNext, getCaucus, setCaucus } = useCommitteeContext();
+    const { getCountries, setCountries, setPushNext, getCaucus, setCaucus, getSettings } = useCommitteeContext();
 
     const [caucusExists, setCaucusExists] = useState(false);
 
@@ -51,7 +51,7 @@ const Caucus = (props) => {
 
         if(countries.length === 0) {
             display_array.push(
-                <div className='speaker-item'>
+                <div className='speaker-item' key={0}>
                     No Countries
                 </div>
             )
@@ -322,7 +322,7 @@ const Caucus = (props) => {
     useEffect(() => {
 
         // option toggle goes here
-        if (true) {
+        if (getSettings() ? ((getSettings().auto_start_speaker_timer === 'true') ? true : false) : false) {
             if(activeSpeaker) {
                 if(!isTicking) {
                     startSpeaking();

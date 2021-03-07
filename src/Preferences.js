@@ -73,18 +73,7 @@ const Preferences = () => {
         }).then((res) => {
             // set into session
             let countries = res.data.countries;
-            let statistics = {
-                mod_no: res.data.statistics.mod_no,
-                mod_seconds: res.data.statistics.mod_seconds,
-                unmod_no: res.data.statistics.unmod_no,
-                unmod_seconds: res.data.statistics.unmod_seconds,
-                roundtable_no: res.data.statistics.roundtable_no,
-                roundtable_seconds: res.data.statistics.roundtable_seconds,
-                primary_no: res.data.statistics.primary_no,
-                primary_seconds: res.data.statistics.primary_seconds,
-                secondary_no: res.data.statistics.secondary_no,
-                secondary_seconds: res.data.statistics.secondary_seconds
-            };
+            let statistics = res.data.statistics;
             let settings = res.data.settings;
             
             setCommitteeCountries(countries.sort((a, b) => (a.name > b.name) ? 1 : -1));
@@ -92,7 +81,7 @@ const Preferences = () => {
             initialize({
                 countries: countries,
                 statistics: statistics,
-                settings: settings,
+                app_settings: settings,
             });
 
         }).catch((err) => {
