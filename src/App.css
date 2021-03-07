@@ -261,12 +261,13 @@ body {
 }
 
 .main .impact h1 {
-  margin-left:10px;
   font-size:50px;
+  text-align:center;
 }
 
 .main .impact h2 {
   padding-top:40px;
+  text-align:center;
 }
 
 
@@ -1270,6 +1271,13 @@ body {
   padding-right:10px;
   font-weight:bold;
   color:white;
+
+  overflow:hidden;
+  padding:0;
+}
+
+.del-stat-bar .stat .stat-no {
+  padding-right:10px;
 }
 
 .del-stat-bar .stat.invisible {

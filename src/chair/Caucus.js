@@ -33,6 +33,9 @@ const Caucus = (props) => {
     const [isExpiredSpeaker, setIsExpiredSpeaker] = useState(false);
     const [isExpiredCaucus, setIsExpiredCaucus] = useState(false);
 
+    const [nextExists, setNextExists] = useState(true);
+    const [previousExists, setPreviousExists] = useState(true);
+
     const caucusInfo = getCaucus();
 
     useEffect(() => {
@@ -79,19 +82,19 @@ const Caucus = (props) => {
         }
 
         setDisplayCountries(display_array);
-    }, [search, activeSpeaker._id, countries]);
+    }, [search, activeSpeaker._id, countries, elapsedTime]);
 
-    const deleteCaucus = () => {
+    const elapseCaucus = (type, duration) => {
         setCaucusExists(false);
         setCaucus('');
-        props.toMotions();
+        props.elapseCaucus({type, duration});
     }
 
 
     // timer functions
 
-    let speakerTime = elapsedTime ? elapsedTime : 0;
-    let totalTime = elapsedTotalTime ? elapsedTotalTime : 0;
+    var speakerTime = elapsedTime ? elapsedTime : 0;
+    var totalTime = elapsedTotalTime ? elapsedTotalTime : 0;
 
     // garbage cleaner
     useEffect(() => {
@@ -101,7 +104,7 @@ const Caucus = (props) => {
             }
             setTimerID([]);
             setIsTicking(false);
-        } else {                                                console.log('New ticker ', timerID);
+        } else {
         }
 
     }, [isTicking]);
@@ -114,10 +117,10 @@ const Caucus = (props) => {
             expiredCaucus();
         }
         speakerTime += 1;
+        setElapsedTime(speakerTime);
         if(speakerTime === (caucusInfo.time_speaker * 60)) { // more strict on expiry time than speaker
             expiredSpeaker();
         }
-        setElapsedTime(speakerTime);
     }
 
     // country starts speaking
@@ -137,7 +140,7 @@ const Caucus = (props) => {
                     // hold in array just in case timer gets invoked twice -- must know ID in order to reset all timers
                     let timerIDs = timerID;
                     timerIDs.push(timer)
-                    setTimerID(timerIDs);                                       console.log('Ticker started with ID', timer);
+                    setTimerID(timerIDs);
                 }
     
             }
@@ -147,7 +150,7 @@ const Caucus = (props) => {
     // country elapses time
     function pauseSpeaking() {
         if(isTicking) {
-            setIsTicking(false);                                        console.log('Ticker stopped, ID', timerID[0]);
+            setIsTicking(false);
         } else {
             console.log('Divided by Zero', timerID)
         }
@@ -166,8 +169,14 @@ const Caucus = (props) => {
         }
         
         // stop (all) ticking
-        setIsTicking(false);                                            console.log('Reset all');
+        setIsTicking(false);
     }
+
+    // JANKY code to sequence the elapsedtime reset so there is enough time to input the duration spoke of speaker into session 
+    useEffect(() => {
+        setElapsedTime(0);
+        speakerTime = 0;
+    }, [refresh])
 
     // new speaker gets selected
     function selectedSpeaker(id) {
@@ -177,14 +186,13 @@ const Caucus = (props) => {
 
             if(activeSpeaker) {
                 setPushNext('true');
-    
+
                 // save data (speaking statistic)
                 let countryToUpdate = countries.find(item=>item._id===activeSpeaker._id); // country to update
                 let updateCountry = {
                     ...countryToUpdate,
-                    stats_moderated: countryToUpdate.stats_moderated + elapsedTime
+                    stats_moderated: parseInt(countryToUpdate.stats_moderated) + elapsedTime
                 };
-                console.log(countryToUpdate.name, elapsedTime);
     
                 let updatedCountries = countries;
                 updatedCountries.splice(updatedCountries.indexOf(countryToUpdate), 1);
@@ -196,11 +204,11 @@ const Caucus = (props) => {
 
             // clear speaker time
             setIsExpiredSpeaker(false);
-            setIsTicking(false);                                            console.log('New speaker selected');
+            setIsTicking(false);
             
             // switch active speaker
             setSearch('');
-            setElapsedTime(0);
+            setRefresh(refresh ? false : true);
 
             // update active speaker on session storage
             let newCaucusInfo = caucusInfo;
@@ -241,7 +249,7 @@ const Caucus = (props) => {
                 // hold in array just in case timer gets invoked twice -- must know ID in order to reset all timers
                 let timerIDs = timerID;
                 timerIDs.push(timer)
-                setTimerID(timerIDs);                                       console.log('Ticker started with ID', timer);
+                setTimerID(timerIDs);
     
             }
         }
@@ -258,6 +266,57 @@ const Caucus = (props) => {
         setIsExpiredCaucus(false);
         setIsTicking(false);
     }
+    
+    function getPresentCountries() {
+        let presentCountries = [];
+
+        // TODO: Refactor code to make more efficient
+        for (let j = 0; j < countries.length; j++) {
+            if(countries[j].presence === 'voting' || countries[j].presence === 'present') {
+                presentCountries.push(countries[j]);
+            }
+        }
+
+        return presentCountries;
+    }
+
+    function nextSpeaker() {
+        let nextSpeakerIndex;
+        let presentCountries = getPresentCountries();
+        
+        for(let i = 0; i < presentCountries.length; i++) {
+            if(presentCountries[i]._id === activeSpeaker._id) {
+                nextSpeakerIndex = i + 1;
+                break;
+            }
+        }
+
+        if((nextSpeakerIndex + 1) === presentCountries.length) {
+            // if the very last item
+            setNextExists(false);
+        }
+
+        selectedSpeaker(presentCountries[nextSpeakerIndex]._id);
+    }
+
+    function previousSpeaker() {
+        let previousSpeakerIndex;
+        let presentCountries = getPresentCountries();
+        
+        for(let i = 0; i < presentCountries.length; i++) {
+            if(presentCountries[i]._id === activeSpeaker._id) {
+                previousSpeakerIndex = i - 1;
+                break;
+            }
+        }
+
+        if((previousSpeakerIndex + 1) === presentCountries.length) {
+            // if the very last item
+            setNextExists(false);
+        }
+
+        selectedSpeaker(presentCountries[previousSpeakerIndex]._id);
+    }
 
     // option for auto-start speaker timer
     useEffect(() => {
@@ -270,6 +329,38 @@ const Caucus = (props) => {
                 }
             }
         }
+
+
+        if(caucusExists) {
+
+            // Round table 'next speaker' functions
+            if(caucusInfo.type === 'Round Table') {
+                let nextSpeakerIndex;
+                let previousSpeakerIndex;
+                let presentCountries = getPresentCountries();
+                
+                for(let i = 0; i < presentCountries.length; i++) {
+                    if(presentCountries[i]._id === activeSpeaker._id) {
+                        nextSpeakerIndex = i + 1;
+                        previousSpeakerIndex = i - 1;
+                        break;
+                    }
+                }
+        
+                if(nextSpeakerIndex === presentCountries.length) {
+                    // if the very last item
+                    setNextExists(false);
+                } else {
+                    setNextExists(true);
+                }
+                if (previousSpeakerIndex === -1) {
+                    setPreviousExists(false);
+                } else {
+                    setPreviousExists(true);
+                }
+            }
+        }
+        
     }, [activeSpeaker._id]);
     
 
@@ -293,41 +384,57 @@ const Caucus = (props) => {
                             ) : ''}
 
                         </div>
+                        {!(caucusInfo.type === 'Round Table') ? (
                         <div className='information-timer'>
                             <div className={`elapsed ${(isExpiredCaucus ? 'expired' : '')}`} style={{width: ((elapsedTotalTime) / parseInt(caucusInfo.time_total * 60) * 100) + '%'}}></div>
                         </div>
+                        ) : ''}
                     </div>
                     {(caucusInfo.type === 'Moderated Caucus' || caucusInfo.type === 'Round Table') ? (
                     <>
                         <div className='speaker'>
                             {(activeSpeaker) ? (
                                 <div className='speaker-inner'>
-                                    <div className='flag'>
-                                        <img src={`https://www.countryflags.io/${activeSpeaker.country_code}/flat/64.png`} />
-                                    </div>
-                                    <div className='name'>
-                                        {activeSpeaker.name}
+                                    <div className='country'>
+                                        <div className='flag'>
+                                            <img src={`https://www.countryflags.io/${activeSpeaker.country_code}/flat/64.png`} />
+                                        </div>
+                                        <div className='name'>
+                                            <h2>{activeSpeaker.name}</h2>
+                                        </div>
                                     </div>
                                     <div className='timer'>
                                         <div className='timer-band'>
                                             <div className={`elapsed ${(isExpiredSpeaker ? 'expired' : '')}`} style={{width: ((elapsedTime) / parseInt(caucusInfo.time_speaker * 60) * 100) + '%'}}></div>
                                         </div>
+                                    </div>
+                                    <div className='country-actions'>
                                         <div className='timer-text'>
                                             {Math.floor(elapsedTime / 60)} minutes {elapsedTime - Math.floor(elapsedTime / 60) * 60} seconds
                                         </div>
-                                    </div>
-                                    <div className='options'>
-                                        {(!isTicking) ? (
-                                            <div className='media-button start' onClick={e=>startSpeaking()}>
-                                                Start
+                                        <div className='options'>
+                                            {(!isTicking) ? (
+                                                <div className='media-button start' onClick={e=>startSpeaking()}>
+                                                    Start
+                                                </div>
+                                            ) : (
+                                                <div className='media-button pause' onClick={e=>pauseSpeaking()}>
+                                                    Stop
+                                                </div>
+                                            )}
+                                            <div className='media-button pause' onClick={e=>resetSpeaking()}>
+                                                Reset
                                             </div>
-                                        ) : (
-                                            <div className='media-button pause' onClick={e=>pauseSpeaking()}>
-                                                Stop
+                                            {((caucusInfo.type === 'Round Table') && (previousExists)) ? (
+                                            <div className='media-button pause' onClick={e=>previousSpeaker()}>
+                                                Previous
                                             </div>
-                                        )}
-                                        <div className='media-button pause' onClick={e=>resetSpeaking()}>
-                                            Reset
+                                            ) : ''}
+                                            {((caucusInfo.type === 'Round Table') && (nextExists)) ? (
+                                            <div className='media-button pause' onClick={e=>nextSpeaker()}>
+                                                Next
+                                            </div>
+                                            ) : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -339,7 +446,9 @@ const Caucus = (props) => {
                         </div>
                         <div className='caucus-action-tray'>
                             <div className='manage-speaker'>
-                                <h3>Select Speaker</h3>
+                                <h3>
+                                    {(caucusInfo.type === 'Round Table') ? 'Speakers List' : 'Select Speaker'}
+                                </h3>
                                 <div className='speaker-container'>
                                     <div className='speaker-search'>
                                         <img src={SearchIcon} />
@@ -353,7 +462,7 @@ const Caucus = (props) => {
                             <div className='equalizaaa'>
                                 <div className='manage-caucus'>
                                     <h3>Manage Caucus</h3>
-                                    <div className='delete-caucus' onClick={e=>deleteCaucus()}>Elapse Caucus</div>
+                                    <div className='delete-caucus' onClick={e=>elapseCaucus((caucusInfo.type === 'Round Table') ? 'Round Table' : 'Moderated Caucus', elapsedTotalTime)}>Elapse Caucus</div>
                                 </div>
                             </div>
                         </div>
@@ -382,7 +491,7 @@ const Caucus = (props) => {
                         </div>
                         <div className='manage-caucus'>
                             <h3>Manage Caucus</h3>
-                            <div className='delete-caucus' onClick={e=>deleteCaucus()}>Elapse Caucus</div>
+                            <div className='delete-caucus' onClick={e=>elapseCaucus('Unmoderated Caucus', elapsedTotalTime)}>Elapse Caucus</div>
                         </div>
                     </>
                     )}

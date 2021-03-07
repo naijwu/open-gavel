@@ -87,7 +87,7 @@ const MotionItem = (props) => {
                         {total}:{speaking} on {topic}
                     </p>
                 </div>
-            ) : ( (type === 'Round Table' && (total && speaking && topic)) ? (
+            ) : ( (type === 'Round Table' && (speaking && topic)) ? (
                 <div className='motion-preview'>
                     <p>
                         {speaking} min Roundtable on {topic}

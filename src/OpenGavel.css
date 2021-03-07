@@ -513,12 +513,39 @@
 
 .speaker-inner {
     text-align:center;
+    width:100%;
+}
+
+.speaker-inner .timer {
+    width:100%; 
+}
+
+.speaker-inner .country {
+    padding-bottom:20px;
+    padding-top:30px;
+    border-radius:4px 4px 0 0;
+    background:white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.01);
+}
+
+.speaker-inner .timer-band {
+    margin:0;
+    border-radius:0;
+}
+
+.speaker-inner .country-actions {
+    padding:20px 0;
+    background: hsla(0,0%,100%,.425);
+    backdrop-filter: blur(20px);
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.01);
 }
 
 .options {
     display:flex;
-    margin-top:20px;
+    padding-top:20px;
     align-items:center;
+    justify-content:center;
 }
 
 .options .media-button {

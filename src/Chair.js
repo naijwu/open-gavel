@@ -47,23 +47,14 @@ const Chair = () => {
         }).then((res) => {
             // set into session
             let countries = res.data.countries;
-            let statistics = {
-                mod_no: res.data.statistics.mod_no,
-                mod_minutes: res.data.statistics.mod_minutes,
-                unmod_no: res.data.statistics.unmod_no,
-                unmod_minutes: res.data.statistics.unmod_minutes,
-                primary_no: res.data.statistics.primary_no,
-                primary_minutes: res.data.statistics.primary_minutes,
-                secondary_no: res.data.statistics.secondary_no,
-                secondary_minutes: res.data.statistics.secondary_minutes
-            };
 
             setCommitteeCountries(countries.sort((a, b) => (a.name > b.name) ? 1 : -1));
-            setCommitteeStatistics(statistics);
+            setCommitteeStatistics(res.data.statistics);
 
             initialize({
                 countries: countries,
-                statistics: statistics,
+                statistics: res.data.statistics,
+                settings: res.data.settings,
             });
 
         }).catch((err) => {
@@ -110,8 +101,8 @@ const Chair = () => {
         // conditional save (if there are any changes made)
         if (shouldPush === 'true') {
             persist({
-                statistics: committeeStatistics,
-                countries: committeeCountries,
+                statistics: getStatistics(),
+                countries: getCountries(),
             });
         } 
 
@@ -132,8 +123,41 @@ const Chair = () => {
         persistMiddleware('component', 'active-caucus');
     }
 
-    const openMotions = () => {
-        persistMiddleware('component', 'motions');
+    const elapseCaucus = (data) => {
+    
+        const { type, duration } = data;
+
+        // if significant caucus
+        if(duration > 10) {
+            setPushNext('true');
+    
+            let currentStatistics = getStatistics();
+            let newStatistics = {};
+    
+            if(type === 'Unmoderated Caucus') {
+                newStatistics = {
+                    ...currentStatistics,
+                    unmod_no: (currentStatistics.unmod_no ? parseInt(currentStatistics.unmod_no) : 0) + 1,
+                    unmod_seconds: (currentStatistics.unmod_seconds ? parseInt(currentStatistics.unmod_seconds) : 0) + duration,
+                };
+            } else if (type === 'Moderated Caucus') {
+                newStatistics = {
+                    ...currentStatistics,
+                    mod_no: (currentStatistics.mod_no ? parseInt(currentStatistics.mod_no) : 0) + 1,
+                    mod_seconds: (currentStatistics.mod_seconds ? parseInt(currentStatistics.mod_seconds) : 0) + duration,
+                };
+            } else if (type === 'Round Table') {
+                newStatistics = {
+                    ...currentStatistics,
+                    roundtable_no: (currentStatistics.roundtable_no ? parseInt(currentStatistics.roundtable_no) : 0) + 1,
+                    roundtable_seconds: (currentStatistics.roundtable_seconds ? parseInt(currentStatistics.roundtable_seconds) : 0) + duration,
+                };
+            }
+    
+            setStatistics(newStatistics);
+    
+            persistMiddleware('component', 'motions');
+        }
     }
 
     return (
@@ -215,7 +239,7 @@ const Chair = () => {
                 ): ''}
                 {(component === 'active-caucus') ? (
                     <Caucus
-                        toMotions={openMotions} />
+                        elapseCaucus={elapseCaucus} />
                 ): ''}
                 {(component === 'options') ? (
                     <Options />

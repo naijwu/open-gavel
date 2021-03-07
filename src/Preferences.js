@@ -75,20 +75,24 @@ const Preferences = () => {
             let countries = res.data.countries;
             let statistics = {
                 mod_no: res.data.statistics.mod_no,
-                mod_minutes: res.data.statistics.mod_minutes,
+                mod_seconds: res.data.statistics.mod_seconds,
                 unmod_no: res.data.statistics.unmod_no,
-                unmod_minutes: res.data.statistics.unmod_minutes,
+                unmod_seconds: res.data.statistics.unmod_seconds,
+                roundtable_no: res.data.statistics.roundtable_no,
+                roundtable_seconds: res.data.statistics.roundtable_seconds,
                 primary_no: res.data.statistics.primary_no,
-                primary_minutes: res.data.statistics.primary_minutes,
+                primary_seconds: res.data.statistics.primary_seconds,
                 secondary_no: res.data.statistics.secondary_no,
-                secondary_minutes: res.data.statistics.secondary_minutes
+                secondary_seconds: res.data.statistics.secondary_seconds
             };
+            let settings = res.data.settings;
             
             setCommitteeCountries(countries.sort((a, b) => (a.name > b.name) ? 1 : -1));
             committeeStatistics(statistics);
             initialize({
                 countries: countries,
                 statistics: statistics,
+                settings: settings,
             });
 
         }).catch((err) => {
@@ -297,9 +301,9 @@ const Preferences = () => {
                         {country.name}
                     </div>
                     <div className='del-stat-bar'>
-                        {country.stats_primary ? (<div className={`stat stat-primary ${(checked.includes('p')) ? '' : 'invisible'}`} style={{width: ((parseInt(country.stats_primary) / highestVal) * 100) + '%'}}>{country.stats_primary + 'm'}</div>) : ''}
-                        {country.stats_secondary ? (<div className={`stat stat-secondary ${(checked.includes('s')) ? '' : 'invisible'}`} style={{width: ((country.stats_secondary / highestVal) * 100) + '%'}}>{country.stats_secondary + 'm'}</div>) : ''}
-                        {country.stats_moderated ? (<div className={`stat stat-other ${(checked.includes('c')) ? '' : 'invisible'}`} style={{width: ((country.stats_moderated / highestVal) * 100) + '%'}}>{country.stats_moderated + 'm'}</div>) : ''}
+                        {country.stats_primary ? (<div className={`stat stat-primary ${(checked.includes('p')) ? '' : 'invisible'}`} style={{width: ((parseInt(country.stats_primary) / highestVal) * 100) + '%'}}><div className='stat-no'>{country.stats_primary + 's'}</div></div>) : ''}
+                        {country.stats_secondary ? (<div className={`stat stat-secondary ${(checked.includes('s')) ? '' : 'invisible'}`} style={{width: ((country.stats_secondary / highestVal) * 100) + '%'}}><div className='stat-no'>{country.stats_secondary + 's'}</div></div>) : ''}
+                        {country.stats_moderated ? (<div className={`stat stat-other ${(checked.includes('c')) ? '' : 'invisible'}`} style={{width: ((country.stats_moderated / highestVal) * 100) + '%'}}><div className='stat-no'>{country.stats_moderated + 's'}</div></div>) : ''}
                     </div>
                 </div>
             );
@@ -366,7 +370,7 @@ const Preferences = () => {
                                     </div>
                                     <div className='small'>
                                         <p>
-                                            {statistics.mod_minutes ? statistics.mod_minutes : '0'} minutes total
+                                            {statistics.mod_seconds ? ((parseInt(statistics.mod_seconds) / 60).toFixed(0) < 1 ? '< 1' : (parseInt(statistics.mod_seconds) / 60).toFixed(0)) : '0'} minutes total
                                         </p>
                                     </div>
                                 </div>
@@ -377,7 +381,18 @@ const Preferences = () => {
                                     </div>
                                     <div className='small'>
                                         <p>
-                                            {statistics.unmod_minutes ? statistics.unmod_minutes : '0'} minutes total
+                                            {statistics.unmod_seconds ? ((parseInt(statistics.unmod_seconds) / 60).toFixed(0) < 1 ? '< 1' : (parseInt(statistics.unmod_seconds) / 60).toFixed(0)) : '0'} minutes total
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className='widget stats'>
+                                    <div className='big'>
+                                        <h3>{statistics.roundtable_no ? statistics.roundtable_no : '0'}</h3>
+                                        <h4>Round Tables</h4>
+                                    </div>
+                                    <div className='small'>
+                                        <p>
+                                            {statistics.roundtable_seconds ? ((parseInt(statistics.roundtable_seconds) / 60).toFixed(0) < 1 ? '< 1' : (parseInt(statistics.roundtable_seconds) / 60).toFixed(0)) : '0'} minutes total
                                         </p>
                                     </div>
                                 </div>
@@ -388,7 +403,7 @@ const Preferences = () => {
                                     </div>
                                     <div className='small'>
                                         <p>
-                                            {statistics.primary_minutes ? statistics.primary_minutes : '0'} minutes total
+                                            {statistics.primary_seconds ? ((parseInt(statistics.primary_seconds) / 60).toFixed(0) < 1 ? '< 1' : (parseInt(statistics.primary_seconds) / 60).toFixed(0)) : '0'} minutes total
                                         </p>
                                     </div>
                                 </div>
@@ -399,7 +414,7 @@ const Preferences = () => {
                                     </div>
                                     <div className='small'>
                                         <p>
-                                            {statistics.secondary_minutes ? statistics.secondary_minutes : '0'} minutes total
+                                            {statistics.secondary_seconds ? ((parseInt(statistics.secondary_seconds) / 60).toFixed(0) < 1 ? '< 1' : (parseInt(statistics.secondary_seconds) / 60).toFixed(0)) : '0'} minutes total
                                         </p>
                                     </div>
                                 </div>

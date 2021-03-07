@@ -8,7 +8,7 @@ const RollCall = (props) => {
 
         for (let i = 0; i < props.countries.length; i++) {
             displayArr.push(
-                <div className={`country ${props.countries[i]._id} ${props.countries[i].presence}`}>
+                <div key={props.countries[i]._id} className={`country ${props.countries[i]._id} ${props.countries[i].presence}`}>
                     <div className='country-name'>
                         {props.countries[i].name}
                     </div>

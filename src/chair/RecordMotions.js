@@ -140,7 +140,7 @@ const RecordMotions = (props) => {
 
         if(getMotionsLength() === 0) {
             displayArray.push(
-                <div className='empty-motions'>
+                <div key={0} className='empty-motions'>
                     Wow, so empty!
                 </div>
             );

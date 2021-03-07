@@ -45,6 +45,7 @@ export function CommitteeProvider({ children }) {
         // pull data from database
         sessionStorage.setItem('countries', JSON.stringify(data.countries));
         sessionStorage.setItem('statistics', JSON.stringify(data.statistics));
+        sessionStorage.setItem('settings', JSON.stringify(data.settings));
         sessionStorage.setItem('pushNext', 'false');
     }
 
@@ -165,7 +166,6 @@ export function CommitteeProvider({ children }) {
                 default_drawer_position: 'open',
                 auto_start_speaker_timer: false,
                 dark_mode: false,
-                auto_start: false,
             }
             sessionStorage.setItem('settings', JSON.stringify(initialData));
         } else {
