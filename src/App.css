@@ -626,6 +626,29 @@ body {
   margin-bottom:30px;
 }
 
+/* no error state */
+.input-group .input-error {
+  height:0;
+  padding-top:0;
+
+  overflow:hidden;
+  color:var(--colour-red);
+}
+
+/* error state  */
+.input-group.errtrue .input-error {
+  padding-top:10px;
+  height:auto;
+}
+
+.input-group.errtrue h3 {
+}
+
+.input-group.errtrue input[type="text"],
+.input-group.errtrue input[type="password"] {
+  background:var(--colour-red-light);
+}
+
 
 
 

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Navigation from './components/Navigation';
@@ -24,51 +24,171 @@ export default function Register() {
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const noInputErrors = {
+        fn: '', // first name error
+        ln: '', // last name error
+        cn: '', // conference name error
+        acn: '', // abbreviated conference name error
+        em: '', // email error
+        pass: '', // password error
+        cp: '', // confirm password error
+    };
+    const [ inputErrors, setInputErrors ] = useState(noInputErrors);
+
 
     // TODO: More robust and UI-friendly form feedback
     function isValid() {
 
-        if (firstName === '' || lastName === '' || conference === '' || email === '' || password == '' || conferenceFullName == '') return false;
+        let fnPass = true, lnPass = true, cnPass = true, acnPass = true, emPass = true, passPass = true, cpPass = true;
+        let errors = noInputErrors;
 
-        return true;
+        // first pass - check if any fields are empty
+        if (firstName === '' || lastName === '' || conference === '' || email === '' || password == '' || conferenceFullName == '') {
+            return setError('All fields are required.');
+        }
+
+        // second pass(es) - check individual fields
+        if (firstName.length < 3) {
+            fnPass = false;
+            errors = {
+                ...errors,
+                fn: 'First name must be over 3 characters.'
+            }
+        } if (firstName.length > 30) {
+            fnPass = false;
+            errors = {
+                ...errors,
+                fn: 'First name cannot exceed 30 characters.'
+            }
+        }
+        if (lastName.length < 3) {
+            lnPass = false;
+            errors = {
+                ...errors,
+                ln: 'Last name must be over 3 characters.'
+            }
+        } if (lastName.length > 30) {
+            lnPass = false;
+            errors = {
+                ...errors,
+                ln: 'First name cannot exceed 30 characters.'
+            }
+        }
+        if (conferenceFullName.length < 5) {
+            cnPass = false;
+            errors = {
+                ...errors,
+                cn: 'Conference name cannot be less than 5 characters.'
+            }
+        } if (conferenceFullName.length > 100) {
+            cnPass = false;
+            errors = {
+                ...errors,
+                cn: 'Conference name cannot exceed 100 characters.'
+            }
+        }
+        if (conference.length < 3) {
+            cnPass = false;
+            errors = {
+                ...errors,
+                acn: 'Abbreviated name cannot be less than 3 characters.'
+            }
+        } if (conference.length > 25) {
+            cnPass = false;
+            errors = {
+                ...errors,
+                acn: 'Abbreviated name cannot exceed 25 characters.'
+            }
+        }
+        if (email.length < 5) {
+            cnPass = false;
+            errors = {
+                ...errors,
+                em: 'Email name cannot be less than 5 characters.'
+            }
+        }
+        if (!email.includes('@')) {
+            emPass = false;
+            errors = {
+                ...errors,
+                em: 'You must enter an email address.'
+            }
+        }
+        if (password.length < 5) {
+            passPass = false;
+            errors = {
+                ...errors,
+                pass: 'Password cannot be less than 5 characters.'
+            }
+        } if (password.length > 150) {
+            passPass = false;
+            errors = {
+                ...errors,
+                pass: 'Password cannot exceed 150 characters.'
+            }
+        }
+        if(password !== confirmPassword) {
+            cpPass = false;
+            errors = {
+                ...errors,
+                cp: 'Passwords do not match.'
+            }
+        }
+
+        if(fnPass && lnPass && cnPass & acnPass && emPass && passPass && cpPass) {
+            return 'valid';
+        } else {
+            setInputErrors({
+                ...errors
+            });
+        }
+        return setError('Please fix the form errors. Sorry!');
     }
+    const [refr, setRefr] = useState(false);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
         setLoading(true);
         setError('');
-        
-        if(!(isValid())) {
-            setLoading(false);
-            return setError("Inappropriate input values given.")
+        setInputErrors(noInputErrors);
+        // setRefr(refr ? false : true);
+
+        // validate
+        if(!(isValid() === 'valid')) {
+            return setLoading(false);
         };
 
-        if(!(password === confirmPassword)) {
-            setLoading(false);
-            return setError("Passwords do not match.")
-        };
-        
+        try {
+            // fetch data from a url endpoint
+            const response = await axios.post(`${API_URL}/authentication/secretariat/register`, {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: password,
+                conferenceFullName: conferenceFullName,
+                conference: conference
+            });
+            const data = await response.json();
 
-        axios.post(`${API_URL}/authentication/secretariat/register`, {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-            conferenceFullName: conferenceFullName,
-            conference: conference
-        })
-        .then(function (response) {
             setError('');
             setSuccess(`You've successfully registered.`);
-        })
-        .catch(function (error) {
-            setSuccess('');
-            setError(JSON.stringify(error));
-        });
+
+            return data;
+        } catch (error) {
+            if(error.response) {
+                setSuccess('');
+                setError(error.response.data.message);
+                setLoading(false);
+            } else {
+                setError('');
+                setSuccess(`You've successfully registered.`);
+            }
+        }
+        
     }
 
-    return (
+    return (!currentUser) ? (
         <>
             <Navigation />
             <div className='main'>
@@ -76,33 +196,54 @@ export default function Register() {
                     <div className='login'>
                         <div className='login-inner'>
                             <h1>Register</h1>
-                            <div className='input-group'>
+                            <div className={`input-group err${(inputErrors.fn) ? 'true' : ''}`}>
                                 <h3>First Name</h3>
-                                <input type="text" value={firstName} onChange={e=>setFirstName(e.target.value)} />
+                                <input type="text" value={firstName} onChange={e=>setFirstName(e.target.value.replace(/[^\w\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <div className='input-error'>
+                                    {inputErrors.fn}
+                                </div>
                             </div>
-                            <div className='input-group'>
+                            <div className={`input-group err${(inputErrors.ln) ? 'true' : ''}`}>
                                 <h3>Last Name</h3>
-                                <input type="text" value={lastName} onChange={e=>setLastName(e.target.value)} />
+                                <input type="text" value={lastName} onChange={e=>setLastName(e.target.value.replace(/[^\w\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <div className='input-error'>
+                                    {inputErrors.ln}
+                                </div>
                             </div>
-                            <div className='input-group'>
+                            <div className={`input-group err${(inputErrors.cn) ? 'true' : ''}`}>
                                 <h3>Conference Name</h3>
-                                <input type="text" value={conferenceFullName} onChange={e=>setConferenceFullName(e.target.value)} />
+                                <input type="text" value={conferenceFullName} onChange={e=>setConferenceFullName(e.target.value.replace(/[^\w\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <div className='input-error'>
+                                    {inputErrors.cn}
+                                </div>
                             </div>
-                            <div className='input-group'>
+                            <div className={`input-group err${(inputErrors.acn) ? 'true' : ''}`}>
                                 <h3>Abbreviated Conference Name</h3>
-                                <input type="text" value={conference} onChange={e=>setConference(e.target.value)} />
+                                <input type="text" value={conference} onChange={e=>setConference(e.target.value.replace(/[^\w\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <div className='input-error'>
+                                    {inputErrors.acn}
+                                </div>
                             </div>
-                            <div className='input-group'>
+                            <div className={`input-group err${(inputErrors.em) ? 'true' : ''}`}>
                                 <h3>Email</h3>
-                                <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
+                                <input type="text" value={email} onChange={e=>setEmail(e.target.value.replace(/[^\w\.\@\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <div className='input-error'>
+                                    {inputErrors.em}
+                                </div>
                             </div>
-                            <div className='input-group'>
+                            <div className={`input-group err${(inputErrors.pass) ? 'true' : ''}`}>
                                 <h3>Password</h3>
                                 <input type="password" value={password} onChange={e=>setPassword(e.target.value)} />
+                                <div className='input-error'>
+                                    {inputErrors.pass}
+                                </div>
                             </div>
-                            <div className='input-group'>
+                            <div className={`input-group err${(inputErrors.cp) ? 'true' : ''}`}>
                                 <h3>Confirm Password</h3>
                                 <input type="password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} />
+                                <div className='input-error'>
+                                    {inputErrors.cp}
+                                </div>
                             </div>
                             <div className='text-tray'>
                                 <div className='notification mb-30'>
@@ -127,6 +268,16 @@ export default function Register() {
                             )}
                         </div>
                     </div>
+                </div>
+            </div>
+            <Footer />
+        </>
+    ) : (
+        <>
+            <Navigation />
+            <div className='main leave'>
+                <div className='container'>
+                    You're already logged in.
                 </div>
             </div>
             <Footer />

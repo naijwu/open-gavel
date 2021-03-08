@@ -85,6 +85,24 @@ const Caucus = (props) => {
     }, [search, activeSpeaker._id, countries, elapsedTime]);
 
     const elapseCaucus = (type, duration) => {
+        if(activeSpeaker) {
+            setPushNext('true');
+
+            // save data (speaking statistic)
+            let countryToUpdate = countries.find(item=>item._id===activeSpeaker._id); // country to update
+            let updateCountry = {
+                ...countryToUpdate,
+                stats_moderated: parseInt(countryToUpdate.stats_moderated) + elapsedTime
+            };
+
+            let updatedCountries = countries;
+            updatedCountries.splice(updatedCountries.indexOf(countryToUpdate), 1);
+            updatedCountries.push(updateCountry);
+            updatedCountries.sort((a, b) => (a.name > b.name) ? 1 : -1);
+            
+            setCountries(updatedCountries);
+        } 
+        
         setCaucusExists(false);
         setCaucus('');
         props.elapseCaucus({type, duration});

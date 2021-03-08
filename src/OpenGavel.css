@@ -912,3 +912,7 @@ h1 {
 .app-container.dmtrue .motion-edit .inputs {
     background:#252526;
 }
+
+.app-container.dmtrue .motion-item .motion-preview {
+    background:rgba(0, 0, 0, 0.1);
+}

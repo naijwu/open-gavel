@@ -133,7 +133,7 @@ const Options = (props) => {
                         </div>
                     </div>
                     <div className='option-block'>
-                        <h3>Auto Start Speech Timer (Caucuses)</h3>
+                        <h3>Auto Start Speech Timer</h3>
                         <div className='toggle-container'>
                             <div className={`custom-toggle ${(options.auto_start_speaker_timer === 'true') ? 'right' : 'left'}`} onClick={e=>{(options.auto_start_speaker_timer === 'true') ? handleUpdate('auto_start_speaker_timer', 'false') : handleUpdate('auto_start_speaker_timer', 'true')}}>
                                 <div className={`toggle-slider`}>

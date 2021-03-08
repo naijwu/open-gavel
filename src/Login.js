@@ -41,14 +41,14 @@ export default function Login() {
             history.push('/secretariat/dashboard')
         })
         .catch(function (error) {
-            setSecError(`${error.message}. Check your email and/or password.`);
+            setSecError(`${error.response.data}`);
             setLoading(false);
         });
 
         setLoading(false);
     }
     
-    function handleSubmitStaff(e) {
+    async function handleSubmitStaff(e) {
         e.preventDefault();
         setLoading(true);
 
@@ -57,7 +57,6 @@ export default function Login() {
         let splitUser = sanitizedUser.substring(0, sanitizedUser.indexOf('@'));
         let splitConference = sanitizedUser.substr(sanitizedUser.indexOf('@') + 1);
         
-
         let postBody = {
             username: splitUser,
             conference: splitConference,
@@ -71,7 +70,7 @@ export default function Login() {
             history.push('/committee/dashboard');
         })
         .catch(function (error) {
-            setStaffError(error.message);
+            setStaffError(error.response.data.message);
             setLoading(false);
         });
         setLoading(false);
