@@ -13,6 +13,8 @@ const Caucus = (props) => {
 
     const { getCountries, setCountries, setPushNext, getCaucus, setCaucus, getSettings } = useCommitteeContext();
 
+    const caucusInfo = getCaucus();
+
     const [caucusExists, setCaucusExists] = useState(false);
 
     // display countries hooks
@@ -22,7 +24,7 @@ const Caucus = (props) => {
     const [refresh, setRefresh] = useState(true);
 
     // speaker management hooks
-    const [activeSpeaker, setActiveSpeaker] = useState(caucusExists ? (getCaucus() ? (getCaucus().current_speaker ? getCaucus().current_speaker : '') : '') : ''); // hooks OBJECT of the country
+    const [activeSpeaker, setActiveSpeaker] = useState(''); // hooks OBJECT of the country
    
     const [elapsedTime, setElapsedTime] = useState(0);
     const [elapsedTotalTime, setElapsedTotalTime] = useState(0);
@@ -36,7 +38,16 @@ const Caucus = (props) => {
     const [nextExists, setNextExists] = useState(true);
     const [previousExists, setPreviousExists] = useState(true);
 
-    const caucusInfo = getCaucus();
+    // update activespeaker from sessionstore
+    useEffect(() => {
+        if(caucusInfo) {
+            if(typeof caucusInfo.current_speaker !== 'undefined') {
+                if(caucusInfo.current_speaker._id) {
+                    setActiveSpeaker(caucusInfo.current_speaker);
+                }
+            }
+        }
+    }, [caucusExists])
 
     useEffect(() => {
         if(caucusInfo) {
@@ -190,13 +201,13 @@ const Caucus = (props) => {
         setIsTicking(false);
     }
 
-    // JANKY code to sequence the elapsedtime reset so there is enough time to input the duration spoke of speaker into session 
+    // JANKY code -- not sure what it does but im scared of deleting it
     useEffect(() => {
         setElapsedTime(0);
         speakerTime = 0;
     }, [refresh])
 
-    // new speaker gets selected
+    // invoked when new speaker gets selected
     function selectedSpeaker(id) {
 
         // check if *actually* new speaker

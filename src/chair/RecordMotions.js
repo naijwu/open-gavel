@@ -4,7 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { useCommitteeContext } from '../contexts/CommitteeContext';
 
 const RecordMotions = (props) => {
-    const { getMotionsList, setMotionsList, setCaucus, getCaucus, getSettings } = useCommitteeContext();
+
+    const handleNullError = () => {
+        // do something
+        console.log('no countries');
+        return [];
+    }
+
+    const { getMotionsList, setMotionsList, setCaucus, getCaucus, getSettings, getCountries } = useCommitteeContext();
+    
+    const [presentCountries, setPresentCountries] = useState(getPresentCountries());
 
     const [displayNotification, setDisplayNotification] = useState(getSettings() ? ((getSettings().hide_all_notifications === 'true') ? false : (getCaucus() ? true : false)) : false);
     
@@ -134,6 +143,20 @@ const RecordMotions = (props) => {
 
         props.toCaucus();
     }
+    
+    function getPresentCountries() {
+        let countries = getCountries();
+        let presentCountries = [];
+
+        // TODO: Refactor code to make more efficient
+        for (let j = 0; j < countries.length; j++) {
+            if(countries[j].presence === 'voting' || countries[j].presence === 'present') {
+                presentCountries.push(countries[j]);
+            }
+        }
+
+        return presentCountries;
+    }
 
     useEffect(() => {
         let displayArray = [];
@@ -150,6 +173,7 @@ const RecordMotions = (props) => {
             displayArray.push(
                 <MotionItem
                     key={item}
+                    countries={presentCountries}
                     id={item}
                     delete={deleteMotion}
                     total={getTotal}

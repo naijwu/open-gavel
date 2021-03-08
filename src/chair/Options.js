@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCommitteeContext } from '../contexts/CommitteeContext';
 
+
 const Options = (props) => {
 
     const { getSettings, setSettings, setPushNext } = useCommitteeContext();
@@ -21,6 +22,9 @@ const Options = (props) => {
         let isDifferent = false;
 
         if(options.default_start_screen !== initialSettings.default_start_screen) {
+            isDifferent = true;
+        }
+        if(options.default_speaker_screen !== initialSettings.default_speaker_screen) {
             isDifferent = true;
         }
         if(options.default_drawer_position !== initialSettings.default_drawer_position) {
@@ -51,6 +55,12 @@ const Options = (props) => {
             newSettings = {
                 ...currentSettings,
                 default_start_screen: value
+            }
+        }
+        if (setting === 'default_speaker_screen') {
+            newSettings = {
+                ...currentSettings,
+                default_speaker_screen: value.toString()
             }
         }
         if (setting === 'default_drawer_position') {
@@ -102,6 +112,15 @@ const Options = (props) => {
                             <option value='Speakers'>Speakers</option>
                             <option value='Motions'>Motions</option>
                             <option value='Active Caucus'>Active Caucus</option>
+                        </select>
+                    </div>
+                    <div className='option-block'>
+                        <h3>Default Speaker Screen</h3>
+                        <select value={options.default_speaker_screen} onChange={e=>handleUpdate('default_speaker_screen', e.target.value)}>
+                            <option value=''>Blank</option>
+                            <option value='Primary'>Primary Speakers List</option>
+                            <option value='Secondary'>Secondary Speakers List</option>
+                            <option value='Single'>Single Speaker</option>
                         </select>
                     </div>
                     <div className='option-block'>

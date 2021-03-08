@@ -5,6 +5,7 @@ import { useAuthContext } from './authentication/AuthContext';
 import { useCommitteeContext } from './contexts/CommitteeContext';
 import { API_URL } from './config';
 import './OpenGavel.css';
+import NewWindow from 'react-new-window';
 
 import RollCall from './chair/RollCall';
 import RecordMotions from './chair/RecordMotions';
@@ -21,8 +22,11 @@ const displaySwitchboard = {
 };
 
 const Chair = () => {
-    const { initialize, getCountries, getStatistics, setStatistics, setCountries, setPushNext, getPushNext, getSettings, persist } = useCommitteeContext();
+    
+    const { initialize, getCountries, getStatistics, setStatistics, setCountries, setPushNext, getPushNext, getSettings, getPresenting, setPresenting, persist } = useCommitteeContext();
     const { currentUser, getTokenData } = useAuthContext();
+
+    const [isPresenting, setIsPresenting] = useState(getPresenting() ? getPresenting() : false);
 
     const history = useHistory();
     const userData = getTokenData();
@@ -71,15 +75,6 @@ const Chair = () => {
         setSlidOut(getSettings().default_drawer_position === 'Opened');
         setIsDarkMode(getSettings().dark_mode === 'true');
     }, [settingRefresh]);
-
-    // darkmode control hehehe
-    useEffect(() => {
-        if(isDarkMode) {
-
-        } else {
-
-        }
-    }, [isDarkMode])
 
     const handleRollCallUpdates = (country, status) => {
         // makes changes
@@ -192,9 +187,20 @@ const Chair = () => {
         });
     }
 
+    function handleTogglePresentation() {
+        if(isPresenting) {
+            // already presenting -- need to stop presenting
+            setIsPresenting(false);
+            setPresenting(false);
+        } else {
+            setIsPresenting(true);
+            setPresenting(true);
+        }
+    }
+
     return (
         <div className={`app-container slid${slidOut} dm${isDarkMode}`}>
-            <div className={`side ${slidOut} hover${slidOutHover}`}>
+            <div className={`side ${slidOut} hover${slidOutHover} presenting${isPresenting}`}>
                 <div className='side-inner'>
                     <div className='tabs' onMouseOver={e=>setSlidOutHover(true)} onMouseLeave={e=>setSlidOutHover(false)} >
                         <div className='tab'>
@@ -226,6 +232,10 @@ const Chair = () => {
 
                     </div>
                     <div className='utility' onMouseOver={e=>setSlidOutHover(true)} onMouseLeave={e=>setSlidOutHover(false)} >
+                        <div className='utility-text' onClick={e=>{handleTogglePresentation()}}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            {(isPresenting) ? 'Stop Presenting' : 'Start Presenting'}
+                        </div>
                         <div className='utility-text' onClick={e => persistMiddleware('component', 'options')}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                             Program Options
@@ -250,6 +260,14 @@ const Chair = () => {
                     </div>
                 </div>
             </div>
+
+            {(isPresenting) ? (
+                <NewWindow
+                  title="Open Gavel"
+                  onBlock={e=>alert('You must enable window pop-ups to start Presentation Mode')}>
+                    <h2>{JSON.stringify(sessionStorage.getItem('countries'))}</h2>
+                </NewWindow>
+            ) : ''}
 
             <div className='app-main'>
                 {(component === 'default') ? (

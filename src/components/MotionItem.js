@@ -7,6 +7,9 @@ const MotionItem = (props) => {
     const [speaking, setSpeaking] = useState(props.speaking(props.id));
     const [topic, setTopic] = useState(props.topic(props.id));
 
+    // cosmetic
+    const [delegate, setDelegate] = useState('');
+
     const updateTotal = (e) => {
         props.setTotal(e.target.value, props.id);
         setTotal(props.total(props.id));
@@ -25,6 +28,21 @@ const MotionItem = (props) => {
     const updateTopic = (e) => {
         props.setTopic(e.target.value, props.id);
         setTopic(props.topic(props.id));
+    }
+
+    const displayDelegates = () => {
+        let displayArr = [];
+
+        displayArr.push(
+            <option value='empty'></option>
+        );
+        for(let i = 0; i < props.countries.length; i++) {
+            displayArr.push(
+                <option key={props.countries[i]._id} value={`${props.countries[i].name}`}>{props.countries[i].name}</option>
+            );
+        }
+
+        return displayArr;
     }
 
     const handleDelete = () => {
@@ -50,6 +68,12 @@ const MotionItem = (props) => {
         <div className={`motion-item ${props.id}`}>
             <div className='motion-edit'>
                 <div className='inputs'>
+                    <div className='input-group'>
+                        Delegate
+                        <select value={delegate} onChange={e=>setDelegate(e.target.value)}>
+                            {displayDelegates()}
+                        </select>
+                    </div>
                     <div className='input-group'>
                         Type
                         <select value={type} onChange={e=>updateType(e)}>

@@ -385,28 +385,6 @@ const Preferences = () => {
                                         </p>
                                     </div>
                                 </div>
-                                <div className='widget stats'>
-                                    <div className='big'>
-                                        <h3>{statistics.primary_no ? statistics.primary_no : '0'}</h3>
-                                        <h4>Primary Speeches</h4>
-                                    </div>
-                                    <div className='small'>
-                                        <p>
-                                            {statistics.primary_seconds ? ((parseInt(statistics.primary_seconds) / 60).toFixed(0) < 1 ? '< 1' : (parseInt(statistics.primary_seconds) / 60).toFixed(0)) : '0'} minutes total
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className='widget stats'>
-                                    <div className='big'>
-                                        <h3>{statistics.secondary_no ? statistics.secondary_no : '0'}</h3>
-                                        <h4>Secondary Speeches</h4>
-                                    </div>
-                                    <div className='small'>
-                                        <p>
-                                            {statistics.secondary_seconds ? ((parseInt(statistics.secondary_seconds) / 60).toFixed(0) < 1 ? '< 1' : (parseInt(statistics.secondary_seconds) / 60).toFixed(0)) : '0'} minutes total
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
                             <div className='right-main'>
                                 <div className='delegate-statistics'>

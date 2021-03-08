@@ -42,12 +42,12 @@ export default function Register() {
         let fnPass = true, lnPass = true, cnPass = true, acnPass = true, emPass = true, passPass = true, cpPass = true;
         let errors = noInputErrors;
 
-        // first pass - check if any fields are empty
+        // primary pass - check if any fields are empty
         if (firstName === '' || lastName === '' || conference === '' || email === '' || password == '' || conferenceFullName == '') {
             return setError('All fields are required.');
         }
 
-        // second pass(es) - check individual fields
+        // secondary passes - check individual fields
         if (firstName.length < 3) {
             fnPass = false;
             errors = {

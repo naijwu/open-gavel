@@ -162,6 +162,7 @@ export function CommitteeProvider({ children }) {
         if(data === 'new') {
             let initialData = {
                 default_start_screen: 'Blank',
+                default_speaker_screen: 'Blank',
                 default_drawer_position: 'Open',
                 hide_all_notice: false,
                 auto_start_speaker_timer: false,
@@ -179,6 +180,23 @@ export function CommitteeProvider({ children }) {
             return null;
         } else {
             return JSON.parse(settings);
+        }
+    }
+
+    function setPresenting(yes) {
+        if(yes) {
+            sessionStorage.setItem('presenting', 'yes');
+        } else {
+            sessionStorage.setItem('presenting', 'no');
+        }
+    }
+
+    function getPresenting() {
+        let presenting = sessionStorage.getItem('presenting');
+        if(!presenting) {
+            return false;
+        } else {
+            return (presenting === 'yes') ? true : false
         }
     }
 
@@ -206,6 +224,9 @@ export function CommitteeProvider({ children }) {
 
         setPushNext,
         getPushNext,
+
+        setPresenting,
+        getPresenting
     }
 
     return (

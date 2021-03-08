@@ -20,13 +20,13 @@ const Main = () => {
                         <div className='grid-item'>
                             <h4>Custom Delegations</h4>
                             <p>
-                                Create your custom delegates for specialized committees.
+                                Create your custom delegates (with your own flags!) for specialized committees.
                             </p>
                         </div>
                         <div className='grid-item'>
-                            <h4>Custom Flags</h4>
+                            <h4>Presentation Mode</h4>
                             <p>
-                                Add customization to your countries with custom flags!
+                                Gone are the days of sacrificing a laptop to chair. Use presentation mode for a cleaner interface and greater accessibility.
                             </p>
                         </div>
                         <div className='grid-item'>
