@@ -41,7 +41,7 @@ export default function Login() {
             history.push('/secretariat/dashboard')
         })
         .catch(function (error) {
-            setSecError(`${error.response.data}`);
+            setSecError(`${error.response.data.message}`);
             setLoading(false);
         });
 

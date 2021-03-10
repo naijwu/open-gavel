@@ -23,10 +23,12 @@ const displaySwitchboard = {
 
 const Chair = () => {
     
-    const { initialize, getCountries, getStatistics, setStatistics, setCountries, setPushNext, getPushNext, getSettings, getPresenting, setPresenting, persist } = useCommitteeContext();
+    const { initialize, getMotionsList, getCountries, getStatistics, setStatistics, setCountries, setPushNext, getPushNext, getSettings, getPresenting, setPresenting, setCurrentPage, persist } = useCommitteeContext();
     const { currentUser, getTokenData } = useAuthContext();
 
     const [isPresenting, setIsPresenting] = useState(getPresenting() ? getPresenting() : false);
+
+    const [motions, setMotions] = useState({});
 
     const history = useHistory();
     const userData = getTokenData();
@@ -104,6 +106,13 @@ const Chair = () => {
         setCommitteeCountries(getCountries());
     }
 
+    const pageSwitchboard = {
+        'rollcall': 'Roll Call',
+        'speakers': 'Speakers',
+        'motions': 'Motions',
+        'active-caucus': 'Active Caucus',
+    }
+
     // exists to persist value to the database
     const persistMiddleware = (next, value) => {
 
@@ -126,6 +135,7 @@ const Chair = () => {
         // Handle next action
         if (next === 'component') {
             setComponent(value);
+            setCurrentPage(pageSwitchboard[value]);
         }
 
         if (next === 'link') {
@@ -198,6 +208,42 @@ const Chair = () => {
         }
     }
 
+
+
+
+    const [displayCountriesPresentation, setDisplayCountriesPresentation] = useState([]);
+
+    useEffect(() => {
+
+
+        console.log(motions);
+
+    }, [motions]);
+
+    useEffect(() => {
+        let return_arr = [];
+
+
+        for (let i = 0; i < committeeCountries.length; i++) {
+            return_arr.push(
+                <div className='present-country'>
+                    <div className='present-country-name'>
+                        {committeeCountries[i].name} 
+                    </div>
+                    <div className={`present-country-presence ${committeeCountries[i].presence ? committeeCountries[i].presence : 'absent'}`}>
+                        {((committeeCountries[i].presence === 'absent') || (committeeCountries[i].presence === '')) ? 'Absent' : ''}
+                        {(committeeCountries[i].presence === 'present') ? 'Present' : ''}
+                        {(committeeCountries[i].presence === 'voting') ? 'Present & Voting' : ''}
+                    </div>
+                </div>
+            )
+        }
+
+
+        setDisplayCountriesPresentation(return_arr);
+
+    }, [committeeCountries])
+
     return (
         <div className={`app-container slid${slidOut} dm${isDarkMode}`}>
             <div className={`side ${slidOut} hover${slidOutHover} presenting${isPresenting}`}>
@@ -265,7 +311,34 @@ const Chair = () => {
                 <NewWindow
                   title="Open Gavel"
                   onBlock={e=>alert('You must enable window pop-ups to start Presentation Mode')}>
-                    <h2>{JSON.stringify(sessionStorage.getItem('countries'))}</h2>
+                    <div className='present-container'>
+                    {(sessionStorage.getItem('currentPage') === 'Roll Call') ? (
+                        <div className='present-wrapper'>
+                            <h2>Roll Call</h2>
+                            <div className='present-list'>
+                                {displayCountriesPresentation}
+                            </div>
+                        </div>
+                    ) : ''}
+                    {(sessionStorage.getItem('currentPage') === 'Motions') ? (
+                        <div className='present-wrapper'>
+                            <h2>Motions</h2>
+                            <div className='present-motions'>
+                                {JSON.stringify(motions)}
+                            </div>
+                        </div>
+                    ) : ''}
+                    {(sessionStorage.getItem('currentPage') === 'Active Caucus') ? (
+                        <div className='present-wrapper'>
+                            <h2>Active Caucus</h2>
+                        </div>
+                    ) : ''}
+                    {(sessionStorage.getItem('currentPage') === 'Speakers') ? (
+                        <div className='present-wrapper'>
+                            <h2>Speakers</h2>
+                        </div>
+                    ) : ''}
+                    </div>
                 </NewWindow>
             ) : ''}
 
@@ -282,6 +355,7 @@ const Chair = () => {
                 ): ''}
                 {(component === 'motions') ? (
                     <RecordMotions
+                        setMotions={setMotions}
                         toCaucus={openCaucus}
                         toOptions={openOptions} />
                 ): ''}

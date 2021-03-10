@@ -855,6 +855,52 @@ h1 {
 
 
 
+
+/* Presenter View */
+
+.present-wrapper {
+    margin:0 auto;
+    width:50%;
+    padding:100px 0;
+}
+
+.present-wrapper h2 {
+    padding-bottom:30px;
+}
+
+.present-country {
+    display:flex;
+    width:100%;
+    justify-content:space-between;
+    padding:10px 0;
+    font-size:1.2rem;
+}
+
+.present-country-name {
+    font-weight:bold;
+}
+
+.present-country-presence {
+    text-align:right;
+    font-weight:bold;
+}
+
+.present-country-presence.absent {
+    color:var(--colour-red);
+}
+
+.present-country-presence.voting,
+.present-country-presence.present {
+    color:var(--colour-green-dark);
+}
+
+
+
+
+
+
+
+
 /* Darkmode Override Styles */
 
 .app-container.dmtrue {

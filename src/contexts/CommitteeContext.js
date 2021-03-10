@@ -46,6 +46,7 @@ export function CommitteeProvider({ children }) {
         sessionStorage.setItem('countries', JSON.stringify(data.countries));
         sessionStorage.setItem('statistics', JSON.stringify(data.statistics));
         sessionStorage.setItem('app_settings', JSON.stringify(data.app_settings));
+        sessionStorage.setItem('currentPage', data.app_settings.default_start_screen);
         sessionStorage.setItem('pushNext', 'false');
     }
 
@@ -86,6 +87,8 @@ export function CommitteeProvider({ children }) {
         sessionStorage.removeItem('caucus');
         sessionStorage.removeItem('speakers');
         sessionStorage.removeItem('app_settings');
+        sessionStorage.removeItem('currentPage');
+        sessionStorage.removeItem('presenting');
     }
 
     function getCountries() {
@@ -200,6 +203,19 @@ export function CommitteeProvider({ children }) {
         }
     }
 
+    function setCurrentPage(data) {
+        sessionStorage.setItem('currentPage', data);
+    }
+    
+    function getCurrentPage() {
+        let currentPage = sessionStorage.getItem('currentPage');
+        if (!currentPage) {
+            return null;
+        } else {
+            return currentPage;
+        }
+    }
+
     const value = {
         initialize,
         persist,
@@ -226,7 +242,9 @@ export function CommitteeProvider({ children }) {
         getPushNext,
 
         setPresenting,
-        getPresenting
+        getPresenting,
+        setCurrentPage,
+        getCurrentPage,
     }
 
     return (

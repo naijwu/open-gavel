@@ -38,6 +38,7 @@ const RecordMotions = (props) => {
         let newMotion = motions;
         newMotion[id].total = value;
 
+        props.setMotions(newMotion);
         setMotionsList(newMotion);
     }
 
@@ -49,6 +50,7 @@ const RecordMotions = (props) => {
         let newMotion = motions;
         newMotion[id].speaking = value;
 
+        props.setMotions(newMotion);
         setMotionsList(newMotion);
     }
 
@@ -60,6 +62,7 @@ const RecordMotions = (props) => {
         let newMotion = motions;
         newMotion[id].type = value;
 
+        props.setMotions(newMotion);
         setMotionsList(newMotion);
     }
 
@@ -71,6 +74,7 @@ const RecordMotions = (props) => {
         let newMotion = motions;
         newMotion[id].topic = value;
 
+        props.setMotions(newMotion);
         setMotionsList(newMotion);
     }
 
@@ -79,6 +83,8 @@ const RecordMotions = (props) => {
         // delete (take care of actual job first)
         let newMotions = motions;
         delete newMotions[id];
+
+        props.setMotions(newMotions);
         setMotionsList(newMotions);
 
         // delay for 0.2 sec for transition (have some fun)
