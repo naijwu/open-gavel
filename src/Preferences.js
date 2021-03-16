@@ -6,6 +6,7 @@ import { API_URL } from './config';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 import AddCountryModal from './components/AddCountryModal';
+import AddCustomModal from './components/AddCustomModal';
 import { useHistory } from 'react-router-dom';
 import { useCommitteeContext } from './contexts/CommitteeContext';
 
@@ -26,7 +27,6 @@ const Preferences = () => {
     const { initialize, getCountries, getStatistics, setStatistics, setCountries } = useCommitteeContext();
 
     const userData = getTokenData();
-    const history = useHistory();
 
     const [loaded, setLoaded] = useState(false);
 
@@ -36,9 +36,12 @@ const Preferences = () => {
     const [selectedCountries, setSelectedCountries] = useState([]); // Array of country_code of countries selected
     const [selected, setSelected] = useState(''); // Number of countries selected, or false
 
-    // For the "Add UN Countries modal"
+    // For the "Add UN Countries" modal
     const [availableUNCountries, setAvailableUNCountries] = useState('');
     const [isAddingCountries, setIsAddingCountries] = useState(false);
+
+    // for the "Add Custom Country" modal
+    const [isAddingCountry, setIsAddingCountry] = useState(false);
 
     // Data from DB about statistics
     const [statistics, committeeStatistics] = useState(getStatistics() ? getStatistics() : []);
@@ -49,7 +52,6 @@ const Preferences = () => {
     const [caucusChecked, setCaucusChecked] = useState(true);
     const [checked, setChecked] = useState('spc');
     const [displayStatistics, setDisplayStatistics] = useState([]);
-
 
     const [refresh, setRefresh] = useState(false);
 
@@ -105,31 +107,31 @@ const Preferences = () => {
         }
     }
 
-    const toggleCountrySelect = (country_code) => {
+    const toggleCountrySelect = (_id) => {
         let countries = selectedCountries;
 
-        if(countries.indexOf(country_code) > -1) {
+        if(countries.indexOf(_id) > -1) {
             // already selected -- remove (like toggle)
-            countries.splice(countries.indexOf(country_code), 1);
+            countries.splice(countries.indexOf(_id), 1);
 
-            let selected = document.getElementsByClassName(country_code);
+            let selected = document.getElementsByClassName(_id);
             selected[0].classList.remove('selected');
             
         } else {
             // not selected -- add
-            countries.push(country_code);
+            countries.push(_id);
 
-            let selected = document.getElementsByClassName(country_code);
+            let selected = document.getElementsByClassName(_id);
             selected[0].classList.add('selected');
         }
         setSelectedCountries(countries);
     }
 
-    const handleCountrySelect = (country_code) => {
+    const handleCountrySelect = (_id) => {
 
         // TODO: perhaps make Shift Click for toggling in-between country selections
 
-        toggleCountrySelect(country_code);
+        toggleCountrySelect(_id);
 
         // not sure why, but selectedcountries.length alone cannot be used in ternary operator for conditional rendering
         if(selectedCountries.length > 0) {
@@ -157,7 +159,7 @@ const Preferences = () => {
 
         const availableCountries = countries.filter((el) => {
             return !committeeCountries.some((f) => {
-                return (f.country_code === el.country_code);
+                return (f.name === el.name);
             });
         });
 
@@ -195,9 +197,38 @@ const Preferences = () => {
         }).catch((err) => {
             console.log(err);
         });
+    }
 
-        newCountries = [];
+    function handleAddCustomCountry(e) {
+        setIsAddingCountry(true);
+    }
 
+    function handleSubmitCustomCountry(country) {
+
+        let newCountries = committeeCountries;
+
+        newCountries.push(country);
+
+        let postBody = {
+            countries: newCountries,
+            statistics: statistics,
+        }
+
+        // return console.log(country);
+        
+        axios.post(`${API_URL}/committee/${userData.committee_id}`, postBody, {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': currentUser,
+            }
+        }).then((res) => {
+            setCountries(postBody.countries);
+
+            setIsAddingCountries(false);
+            resetEditStates();
+        }).catch((err) => {
+            console.log(err);
+        });
     }
 
 
@@ -205,7 +236,7 @@ const Preferences = () => {
         // TODO: Have a modal confirmation or something
 
         const newCountries = committeeCountries.filter((item) => {
-            return !selectedCountries.includes(item.country_code);
+            return !selectedCountries.includes(item._id);
         });
 
         let postBody = {
@@ -249,10 +280,14 @@ const Preferences = () => {
 
         for (let i = 0; i < committeeCountries.length; i++) {
             displayArr.push(
-                <div className={`country-item ${committeeCountries[i].country_code}`} onClick={e=>handleCountrySelect(committeeCountries[i].country_code)}>
+                <div className={`country-item ${committeeCountries[i]._id}`} onClick={e=>handleCountrySelect(committeeCountries[i]._id)}>
                     <div className='checked'></div>
                     <p>{committeeCountries[i].name}</p>
-                    <img src={`https://www.countryflags.io/${committeeCountries[i].country_code}/flat/32.png`} />
+                    {(committeeCountries[i].country_code) ? (
+                        <img src={`https://www.countryflags.io/${committeeCountries[i].country_code}/flat/32.png`} />
+                    ) : (
+                        <img src={committeeCountries[i].country_flag_base} />
+                    )}
                 </div>
             );
         }
@@ -298,12 +333,12 @@ const Preferences = () => {
             );
         }
         setDisplayStatistics(displayArrStatistics);   
-    } , [refresh, committeeCountries, checked])
+    }, [refresh, committeeCountries, checked])
 
     return loaded && (
         <div>
             <Navigation />
-            <div className={`main preferences modal${isAddingCountries}`}>
+            <div className={`main preferences modal${(isAddingCountries || isAddingCountry)}`}>
                 <div className='container'>
                     <h1>Committee Dashboard</h1>
 
@@ -341,7 +376,7 @@ const Preferences = () => {
                                     <div className='country-manage-actions'>
                                         <button className={`remove-country display${selected ? true : ''}`} onClick={handleRemoveCountries}>Remove Selected ({selectedCountries.length})</button>
                                         <button className='add-country un' onClick={handleAddUNCountries}>Add UN Countries</button>
-                                        <button className='add-country custom'>Add Custom Country</button>
+                                        <button className='add-country custom' onClick={handleAddCustomCountry}>Add Custom Country</button>
                                     </div>
                                 </div>
                             </div>
@@ -418,9 +453,18 @@ const Preferences = () => {
             {(isAddingCountries) ? ( // Edits to the secretariat profile (not committee accounts)
                 <AddCountryModal
                     visible={isAddingCountries}
-                    visibleFn={setIsAddingCountries} 
+                    visibleFn={setIsAddingCountries}
                     countries={availableUNCountries}
                     submit={handleSubmitUNCountries}
+                    />
+            ) : ''}
+            {(isAddingCountry) ? ( 
+                <AddCustomModal
+                    visible={isAddingCountry}
+                    visibleFn={setIsAddingCountry}
+                    stockCountries={countries}
+                    committeeCountries={committeeCountries}
+                    submit={handleSubmitCustomCountry}
                     />
             ) : ''}
         </div>

@@ -23,6 +23,7 @@ const RecordMotions = (props) => {
         {
             uuid: {
                 type: 'Moderated Caucus',
+                delegate: '',
                 total: '',
                 speaking: '',
                 topic: ''
@@ -76,6 +77,19 @@ const RecordMotions = (props) => {
     const setTopic = (value, id) => {
         let newMotion = motions;
         newMotion[id].topic = value;
+
+        props.setMotions(newMotion);
+        props.setMotionsStringy(JSON.stringify(newMotion));
+        setMotionsList(newMotion);
+    }
+
+    const getDelegate = (id) => {
+        return motions[id].delegate;
+    }
+    
+    const setDelegate = (value, id) => {
+        let newMotion = motions;
+        newMotion[id].delegate = value;
 
         props.setMotions(newMotion);
         props.setMotionsStringy(JSON.stringify(newMotion));
@@ -197,6 +211,8 @@ const RecordMotions = (props) => {
                     setType={setType}
                     topic={getTopic}
                     setTopic={setTopic}
+                    delegate={getDelegate}
+                    setDelegate={setDelegate}
                     submit={handleToCaucus} />
             )
         }

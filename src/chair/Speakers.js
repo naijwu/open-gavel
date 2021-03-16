@@ -3,14 +3,14 @@ import { useCommitteeContext } from '../contexts/CommitteeContext';
 
 const Speakers = (props) => {
 
-    const { getSettings, getCountries } = useCommitteeContext();
+    const { getSettings, getCountries, setCountries, setPushNext } = useCommitteeContext();
 
     const [ presentCountries, setPresentCountries ] = useState([]);
     const [ screen, setScreen ] = useState(getSettings() ? getSettings().default_speaker_screen : '');
 
     const [activeSpeaker, setActiveSpeaker] = useState({});
     const [time, setTime] = useState(0);
-    const [speakersList, setSpeakersList] = useState(sessionStorage.getItem('speakersData') ? JSON.parse(sessionStorage.getItem('speakersData')).list : []);
+    const [speakersList, setSpeakersList] = useState((screen === 'Primary') ? (sessionStorage.getItem('speakersDataPrimary') ? JSON.parse(sessionStorage.getItem('speakersDataPrimary')).list : []) : (sessionStorage.getItem('speakersDataSecondary') ? JSON.parse(sessionStorage.getItem('speakersDataSecondary')).list : []));
 
     const [displayCountries, setDisplayCountries] = useState([]);
     const [displayList, setDisplayList] = useState([]);
@@ -84,8 +84,8 @@ const Speakers = (props) => {
     }
 
     function handleAddToList(country_id) {
+        let newList = speakersList;
         if(!started) {
-            let newList = speakersList;
     
            // check if allowed action
             let found = false;
@@ -104,7 +104,7 @@ const Speakers = (props) => {
             setSpeakersList(newList);
             triggerRefresh();
         }
-        saveState();
+        saveState(newList);
     }
 
     function handleRemoveSelected() {
@@ -121,12 +121,13 @@ const Speakers = (props) => {
         setSelectedSpeakers([]);
         setSpeakersList(newList);
         triggerRefresh();
-        saveState();
+        saveState(newList);
     }
 
     function handleRemoveAll() {
         setSpeakersList([]);
         setSelectedSpeakers([]);
+        saveState([]);
         setShowStart(false);
         setShowRemove(false);
         triggerRefresh();
@@ -180,15 +181,20 @@ const Speakers = (props) => {
         }
     }
 
-    function saveState() {
+    function saveState(newList) {
         let data = {
             time: timeElapsed.toString(),
             active: activeSpeaker,
             list: speakersList,
         };
-
         props.setDataStringy(JSON.stringify(data));
-        sessionStorage.setItem('speakersData', JSON.stringify(data));
+        if(newList) {
+            if(screen === 'Primary') {
+                sessionStorage.setItem('speakersDataPrimary', JSON.stringify({list: newList}));
+            } else if (screen === 'Secondary') {
+                sessionStorage.setItem('speakersDataSecondary', JSON.stringify({list: newList}));
+            }
+        }
     }
 
     useEffect(() => {
@@ -211,16 +217,59 @@ const Speakers = (props) => {
         }
     }
 
+    function updateCountriesSession() {
+        
+        if(activeSpeaker) {
+            setPushNext('true');
+    
+            // save data (speaking statistic)
+            let countries = getCountries();
+            let countryToUpdate = countries.find(item=>item._id===activeSpeaker._id); // country to update
+            let updateCountry = {};
+            if(screen === 'Primary') {
+                console.log(countryToUpdate.stats_secondary, timeElapsed);
+                updateCountry = {
+                    ...countryToUpdate,
+                    stats_primary: parseInt(countryToUpdate.stats_primary) + timeElapsed
+                };
+
+            } else if (screen === 'Secondary') {
+                console.log(countryToUpdate.stats_secondary, timeElapsed);
+                updateCountry = {
+                    ...countryToUpdate,
+                    stats_secondary: parseInt(countryToUpdate.stats_secondary) + timeElapsed
+                };
+            }
+    
+            let updatedCountries = countries;
+            let index = 0;
+            for(let i = 0; i < countries.length; i++) {
+                if(countries[i]._id === activeSpeaker._id) {
+                    index = i;
+                    break;
+                }
+            }
+            updatedCountries.splice(index, 1);
+            updatedCountries.push(updateCountry);
+            updatedCountries.sort((a, b) => (a.name > b.name) ? 1 : -1);
+            
+            // console.log(updatedCountries);
+            setCountries(updatedCountries);
+        }
+    }
+
     function speakingFinished() {
-        // not last speaker -- splice current speaker off of speaker list, go to next speaker
+        updateCountriesSession();
+
         let list = speakersList;
         list.splice(0, 1);
         setActiveSpeaker(speakersList[0]);
 
         if(list.length === 0) {
-            handleStop();
+            handleStop('skip');
             setShowStart(false);
         }
+        saveState(list);
         triggerRefresh();
         setTicking(false);
         setTime(0);
@@ -249,13 +298,37 @@ const Speakers = (props) => {
         triggerRefresh();
     }
 
-    function handleStop() {
+    function handleStop(skip) {
+        if(!(skip === 'skip')) updateCountriesSession();
         setTime(0);
         setStarted(false);
         setTicking(false);
         triggerRefresh();
         setActiveSpeaker([]);
     }
+    
+    // when screen is changed
+    useEffect(() => {
+
+        setTime(0);
+        setStarted(false);
+        setTicking(false);
+        triggerRefresh();
+        setActiveSpeaker([]);
+
+        if(screen === 'Primary') {
+            if(sessionStorage.getItem('speakersDataPrimary')) {
+                setShowStart(speakersList ? ((JSON.parse(sessionStorage.getItem('speakersDataPrimary')).list.length > 0) ? true : false) : false);
+                setSpeakersList(JSON.parse(sessionStorage.getItem('speakersDataPrimary')).list);
+            }
+        }
+        if(screen === 'Secondary') {
+            if(sessionStorage.getItem('speakersDataSecondary')) {
+                setShowStart(speakersList ? ((JSON.parse(sessionStorage.getItem('speakersDataSecondary')).list.length > 0) ? true : false) : false);
+                setSpeakersList(JSON.parse(sessionStorage.getItem('speakersDataSecondary')).list);
+            }
+        }
+    }, [screen]);
 
     return (
         <div className='app-inner'>
@@ -269,9 +342,9 @@ const Speakers = (props) => {
                     </div>
                 </div>
                 <div className='speakers-inner'>
-                {(screen === 'Primary') ? (
+                {(screen === 'Primary' || screen === 'Secondary') ? (
                     <div className='primary-list'>
-                        <h2>Primary Speakers List</h2>
+                        <h2>{(screen === 'Primary') ? 'Primary' : 'Secondary'} Speakers List</h2>
                         <div className='speakers-wrap'>
                             <div className='speakers-container'>
                                 {(activeSpeaker) ? ((activeSpeaker.name) ? (
@@ -343,11 +416,6 @@ const Speakers = (props) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ) : ''}
-                {(screen === 'Secondary') ? (
-                    <div className='secondary-list'>
-                        <h2>Secondary Speakers List</h2>
                     </div>
                 ) : ''}
                 {(screen === 'Single') ? (

@@ -565,6 +565,10 @@ h1 {
     box-shadow: 0 0 10px rgba(0,0,0,0.01);
 }
 
+.speaker-inner .country .img {
+    max-width:500px;
+}
+
 .speaker-inner .timer-band {
     margin:0;
     border-radius:0;

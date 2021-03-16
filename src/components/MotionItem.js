@@ -6,8 +6,6 @@ const MotionItem = (props) => {
     const [total, setTotal] = useState(props.total(props.id));
     const [speaking, setSpeaking] = useState(props.speaking(props.id));
     const [topic, setTopic] = useState(props.topic(props.id));
-
-    // cosmetic
     const [delegate, setDelegate] = useState('');
 
     const updateTotal = (e) => {
@@ -28,6 +26,11 @@ const MotionItem = (props) => {
     const updateTopic = (e) => {
         props.setTopic(e.target.value, props.id);
         setTopic(props.topic(props.id));
+    }
+    
+    const updateDelegate = (e) => {
+        props.setDelegate(e.target.value, props.id);
+        setDelegate(props.delegate(props.id));
     }
 
     const displayDelegates = () => {
@@ -72,7 +75,7 @@ const MotionItem = (props) => {
                 <div className='inputs'>
                     <div className='input-group'>
                         Delegate
-                        <select value={delegate} onChange={e=>setDelegate(e.target.value)}>
+                        <select value={delegate} onChange={e=>updateDelegate(e)}>
                             {displayDelegates()}
                         </select>
                     </div>

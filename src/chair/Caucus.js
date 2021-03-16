@@ -99,7 +99,7 @@ const Caucus = (props) => {
         sessionStorage.removeItem('caucusData');
         props.setDataStringy('');
 
-        if(activeSpeaker) {
+        if(activeSpeaker && (!caucusInfo.type === 'Unmoderated Caucus')) {
             setPushNext('true');
 
             // save data (speaking statistic)
@@ -444,7 +444,11 @@ const Caucus = (props) => {
                                 <div className='speaker-inner'>
                                     <div className='country'>
                                         <div className='flag'>
-                                            <img src={`https://www.countryflags.io/${activeSpeaker.country_code}/flat/64.png`} />
+                                            {(activeSpeaker.country_code) ? (
+                                                <img src={`https://www.countryflags.io/${activeSpeaker.country_code}/flat/64.png`} />
+                                            ) : (
+                                                <img src={activeSpeaker.country_flag_base} />
+                                            )}
                                         </div>
                                         <div className='name'>
                                             <h2>{activeSpeaker.name}</h2>
