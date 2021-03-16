@@ -96,6 +96,9 @@ const Caucus = (props) => {
     }, [search, activeSpeaker._id, countries, elapsedTime]);
 
     const elapseCaucus = (type, duration) => {
+        sessionStorage.removeItem('caucusData');
+        props.setDataStringy('');
+
         if(activeSpeaker) {
             setPushNext('true');
 
@@ -205,7 +208,22 @@ const Caucus = (props) => {
     useEffect(() => {
         setElapsedTime(0);
         speakerTime = 0;
-    }, [refresh])
+    }, [refresh]);
+
+    // update sessionStorage for presentation mode
+    useEffect(() => {
+        let caucusData = {
+            active: activeSpeaker,
+            speakerTime: speakerTime,
+            totalTime: totalTime,
+        }
+
+        if(sessionStorage.getItem('presenting') ? (sessionStorage.getItem('presenting') === 'yes') : false) {
+            sessionStorage.setItem('caucusData', JSON.stringify(caucusData));
+            props.setDataStringy(JSON.stringify(caucusData));
+        }
+
+    }, [activeSpeaker, speakerTime, totalTime]);
 
     // invoked when new speaker gets selected
     function selectedSpeaker(id) {
@@ -413,7 +431,7 @@ const Caucus = (props) => {
                             ) : ''}
 
                         </div>
-                        {!(caucusInfo.type === 'Round Table') ? (
+                        {(!(caucusInfo.type === 'Round Table')) ? (
                         <div className='information-timer'>
                             <div className={`elapsed ${(isExpiredCaucus ? 'expired' : '')}`} style={{width: ((elapsedTotalTime) / parseInt(caucusInfo.time_total * 60) * 100) + '%'}}></div>
                         </div>

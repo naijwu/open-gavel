@@ -39,6 +39,7 @@ const RecordMotions = (props) => {
         newMotion[id].total = value;
 
         props.setMotions(newMotion);
+        props.setMotionsStringy(JSON.stringify(newMotion));
         setMotionsList(newMotion);
     }
 
@@ -51,6 +52,7 @@ const RecordMotions = (props) => {
         newMotion[id].speaking = value;
 
         props.setMotions(newMotion);
+        props.setMotionsStringy(JSON.stringify(newMotion));
         setMotionsList(newMotion);
     }
 
@@ -63,6 +65,7 @@ const RecordMotions = (props) => {
         newMotion[id].type = value;
 
         props.setMotions(newMotion);
+        props.setMotionsStringy(JSON.stringify(newMotion));
         setMotionsList(newMotion);
     }
 
@@ -75,6 +78,7 @@ const RecordMotions = (props) => {
         newMotion[id].topic = value;
 
         props.setMotions(newMotion);
+        props.setMotionsStringy(JSON.stringify(newMotion));
         setMotionsList(newMotion);
     }
 
@@ -85,6 +89,7 @@ const RecordMotions = (props) => {
         delete newMotions[id];
 
         props.setMotions(newMotions);
+        props.setMotionsStringy(JSON.stringify(newMotions));
         setMotionsList(newMotions);
 
         // delay for 0.2 sec for transition (have some fun)
@@ -110,7 +115,7 @@ const RecordMotions = (props) => {
         if(getMotionsLength() < 6) {
             let uuid = uuidv4();
 
-            setMotions({
+            let newMotions = ({
                 ...motions,
                 [uuid]: {
                     type: 'Moderated Caucus',
@@ -119,6 +124,8 @@ const RecordMotions = (props) => {
                     topic: ''
                 }
             });
+            setMotions(newMotions);
+            props.setMotionsStringy(JSON.stringify(newMotions));
             setTrigger(trigger ? false : true);
         }
     }

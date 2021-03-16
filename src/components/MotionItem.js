@@ -52,8 +52,10 @@ const MotionItem = (props) => {
     const handleSubmit = () => {
         // checking
         if(type === 'Moderated Caucus' && (total && speaking && topic)) {
-            if(total >= speaking) {
+            if(parseInt(total) >= parseInt(speaking)) {
                 props.submit({type, total, speaking, topic}, props.id);
+            } else {
+                console.log('fug');
             }
         } else if (type==='Unmoderated Caucus' && (total && topic)) {
             props.submit({type, total, topic}, props.id);

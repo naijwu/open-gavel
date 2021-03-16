@@ -852,6 +852,38 @@ h1 {
 }
 
 
+.speakers-bot {
+    display:flex;
+    justify-content: space-between;
+}
+
+.speakers-add,
+.speakers-list,
+.speakers-manage {
+    box-sizing: border-box;
+    padding:20px;
+    background:white;
+    width:31%;
+}
+
+.speakers-container {
+    padding:50px 0;
+}
+
+.speakers-add.disabled {
+    user-select: none;
+    opacity:0.420;
+}
+
+.country-in-list.selected {
+    background:yellow;
+}
+
+.speakers-bot.speaking .country-in-list.selected {
+    background:none;
+}
+
+
 
 
 

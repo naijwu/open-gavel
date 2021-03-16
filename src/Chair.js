@@ -29,6 +29,22 @@ const Chair = () => {
     const [isPresenting, setIsPresenting] = useState(getPresenting() ? getPresenting() : false);
 
     const [motions, setMotions] = useState({});
+    const [motionsStringified, setMotionsStringified] = useState(getMotionsList() ? JSON.stringify(getMotionsList()) : JSON.stringify(
+        {
+            uuid: {
+                type: 'Moderated Caucus',
+                total: '',
+                speaking: '',
+                topic: ''
+            }
+        }
+    )); // pres mode
+
+    const [speakersData, setSpeakersData] = useState({});
+    const [speakersStringified, setSpeakersStringified] = useState(''); // pres mode
+    
+    const [caucusData, setCaucusData] = useState({});
+    const [caucusStringified, setCaucusStringified] = useState(''); // pres mode
 
     const history = useHistory();
     const userData = getTokenData();
@@ -43,6 +59,8 @@ const Chair = () => {
     const [settingRefresh, setSettingRefresh] = useState(true);
 
     const [isDarkMode, setIsDarkMode] = useState(getSettings() ? getSettings().dark_mode === 'true' : false);
+
+
 
     // only at the very beginning
     useEffect(() => {
@@ -214,11 +232,19 @@ const Chair = () => {
     const [displayCountriesPresentation, setDisplayCountriesPresentation] = useState([]);
 
     useEffect(() => {
+        if(motionsStringified) {
+            setMotions(JSON.parse(motionsStringified));
+        } 
 
+        if(speakersStringified) {
+            setSpeakersData(JSON.parse(speakersStringified));
+        }
 
-        console.log(motions);
+        if(caucusStringified) {
+            setCaucusData(JSON.parse(caucusStringified));
+        }
 
-    }, [motions]);
+    }, [motionsStringified, speakersStringified, caucusStringified]);
 
     useEffect(() => {
         let return_arr = [];
@@ -331,11 +357,13 @@ const Chair = () => {
                     {(sessionStorage.getItem('currentPage') === 'Active Caucus') ? (
                         <div className='present-wrapper'>
                             <h2>Active Caucus</h2>
+                            {JSON.stringify(caucusData)}
                         </div>
                     ) : ''}
                     {(sessionStorage.getItem('currentPage') === 'Speakers') ? (
                         <div className='present-wrapper'>
                             <h2>Speakers</h2>
+                            {JSON.stringify(speakersData)}
                         </div>
                     ) : ''}
                     </div>
@@ -356,14 +384,17 @@ const Chair = () => {
                 {(component === 'motions') ? (
                     <RecordMotions
                         setMotions={setMotions}
+                        setMotionsStringy={setMotionsStringified}
                         toCaucus={openCaucus}
                         toOptions={openOptions} />
                 ): ''}
                 {(component === 'speakers') ? (
-                    <Speakers />
+                    <Speakers
+                        setDataStringy={setSpeakersStringified} />
                 ): ''}
                 {(component === 'active-caucus') ? (
                     <Caucus
+                        setDataStringy={setCaucusStringified}
                         elapseCaucus={elapseCaucus} />
                 ): ''}
                 {(component === 'options') ? (
