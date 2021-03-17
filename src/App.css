@@ -43,9 +43,6 @@ glassmorph: {
   --colour-yellow-light:#fbff0031;
   --colour-yellow-dark: #ceaf00;
 
-  --colour-green: #3c763d;
-  --colour-green-light: #3c763d25;
-
   --colour-red:#D40943;
   --colour-red-light:#d4094249;
   --colour-red-dark:#97042e;
@@ -55,9 +52,9 @@ glassmorph: {
   --colour-blue-lightest:#18a0fb17;
   --colour-blue-dark: #0782D3;
 
-  --colour-green: #7be436;
-  --colour-green-light: #a5fd2942;
-  --colour-green-dark: #78c014;
+  --colour-green: #38db23;
+  --colour-green-light: #5afd2942;
+  --colour-green-dark: #1fa30d;
 
 
   --neon-red: #FF3B94;

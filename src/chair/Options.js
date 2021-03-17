@@ -39,6 +39,9 @@ const Options = (props) => {
         if(options.dark_mode !== initialSettings.dark_mode) {
             isDifferent = true;
         }
+        if(options.speaking_time !== initialSettings.speaking_time) {
+            isDifferent = true;
+        }
 
         if(isDifferent) {
             setMadeChanges(true);
@@ -87,6 +90,12 @@ const Options = (props) => {
                 dark_mode: value.toString()
             }
         }
+        if (setting === 'speaking_time') {
+            newSettings = {
+                ...currentSettings,
+                speaking_time: value.toString()
+            }
+        }
 
         setOptions(newSettings);
         setSettings(newSettings);
@@ -122,6 +131,12 @@ const Options = (props) => {
                             <option value='Secondary'>Secondary Speakers List</option>
                             <option value='Single'>Single Speaker</option>
                         </select>
+                    </div>
+                    <div className='option-block'>
+                        <h3>Speaker List Speaking Time</h3>
+                        <div className='text-field'>
+                            <input type='text' value={options.speaking_time} onChange={e=>handleUpdate('speaking_time', e.target.value.replace(/[^0-9]/gi, '').substring(0,3))} /> Seconds
+                        </div>
                     </div>
                     <div className='option-block'>
                         <h3>Default Drawer Position</h3>

@@ -30,10 +30,20 @@ const Speakers = (props) => {
     const [search, setSearch] = useState('');
     const [addedSpeakers, setAddedSpeakers] = useState([]);
 
-    const max = 60;
+    const [activeID, setActiveID] = useState(''); // for single speaker
 
-    // update present/present & voting countries
+    const [max, setMax] = useState((sessionStorage.getItem('app_settings')) ? parseInt(JSON.parse(sessionStorage.getItem('app_settings')).speaking_time) : 60);
+
+    // set up lists, update present/present & voting countries
     useEffect(() => {
+        if(!sessionStorage.getItem('speakersDataPrimary')) {
+            sessionStorage.setItem('speakersDataPrimary', JSON.stringify({list: []}));
+        }
+        if(!sessionStorage.getItem('speakersDataSecondary')) {
+            sessionStorage.setItem('speakersDataSecondary', JSON.stringify({list: []}));
+        }
+        updateSpeakersArray();
+
         let countries = getCountries();
         if(countries) {
             let available = [];
@@ -78,7 +88,8 @@ const Speakers = (props) => {
 
     // only for single speaker
     function handleSetSpeaker(speaker) {
-        setActiveSpeaker(speaker)
+        setActiveSpeaker(speaker);
+        setActiveID(speaker._id);
     }
 
     // update countries display
@@ -119,7 +130,7 @@ const Speakers = (props) => {
             } else {
                 for(let i = 0; i < presentCountries.length; i++) {
                     return_val.push(
-                        <div className={`country-to-add speaker-item`} onClick={e=>handleSetSpeaker(presentCountries[i])}>
+                        <div className={`country-to-add speaker-item ${(activeID === presentCountries[i]._id) ? 'active' : ''}`} onClick={e=>handleSetSpeaker(presentCountries[i])}>
                             {presentCountries[i].name}
                         </div>
                     );
@@ -127,9 +138,8 @@ const Speakers = (props) => {
             }
         }
 
-
         setDisplayCountries(return_val);
-    }, [presentCountries, search, refresh, speakersList]);
+    }, [presentCountries, search, refresh, speakersList, activeID]);
 
     // update countries list (after added from countries display above)
     useEffect(() => {
@@ -140,11 +150,19 @@ const Speakers = (props) => {
                 <div className={`country-in-list ${speakersList[i]._id}`} onClick={e=>handleToggleSelect(speakersList[i]._id)}>
                     {speakersList[i].name}
                 </div>
-            )
+            );
+        }
+
+        if(speakersList.length === 0) {
+            return_val.push(
+                <div className='nothing'>
+                    Add Speakers
+                </div>
+            );
         }
 
         setDisplayList(return_val);
-    }, [speakersList, refresh]);
+    }, [speakersList, refresh, screen]);
 
     function triggerRefresh() {
         setRefresh(refresh ? false : true);
@@ -513,7 +531,11 @@ const Speakers = (props) => {
                                                         Clear List
                                                     </div>
                                                 )
-                                            ) : ''}
+                                            ) : (
+                                                <div className='nothing'>
+                                                    Add Speakers
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -559,11 +581,11 @@ const Speakers = (props) => {
                                     </>
                                 ) : (
                                     <div className='inactive'>
-                                        Select Speaker
+                                        Select a Speaker
                                     </div>
                                     )) : (
                                     <div className='inactive'>
-                                        Select Speaker
+                                        Select a Speaker
                                     </div>
                                 )}
                             </div>

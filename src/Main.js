@@ -48,9 +48,9 @@ const Main = () => {
                             </p>
                         </div>
                         <div className='grid-item'>
-                            <h4>Open and (mostly) free!</h4>
+                            <h4>Open and free!</h4>
                             <p>
-                                The first 10 committee accounts will always be free. All the code is also public on GitHub.
+                                OpenGavel is free for all conferences to use. All the code is also public on GitHub.
                             </p>
                         </div>
                     </div>

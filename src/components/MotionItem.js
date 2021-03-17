@@ -6,7 +6,7 @@ const MotionItem = (props) => {
     const [total, setTotal] = useState(props.total(props.id));
     const [speaking, setSpeaking] = useState(props.speaking(props.id));
     const [topic, setTopic] = useState(props.topic(props.id));
-    const [delegate, setDelegate] = useState('');
+    const [delegate, setDelegate] = useState(props.delegate(props.id));
 
     const updateTotal = (e) => {
         props.setTotal(e.target.value, props.id);
@@ -107,7 +107,7 @@ const MotionItem = (props) => {
                     </div>
                 </div>
                 <div className='motion-action' onClick={e=>handleSubmit()}>
-                    To Caucus
+                    Start
                 </div>
             </div>
             {((type === 'Moderated Caucus') && (total && speaking && topic)) ? (

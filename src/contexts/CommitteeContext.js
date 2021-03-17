@@ -89,6 +89,8 @@ export function CommitteeProvider({ children }) {
         sessionStorage.removeItem('app_settings');
         sessionStorage.removeItem('currentPage');
         sessionStorage.removeItem('presenting');
+        sessionStorage.removeItem('speakersDataPrimary');
+        sessionStorage.removeItem('speakersDataSecondary');
     }
 
     function getCountries() {
@@ -170,6 +172,7 @@ export function CommitteeProvider({ children }) {
                 hide_all_notice: false,
                 auto_start_speaker_timer: false,
                 dark_mode: false,
+                speaking_time: '60'
             }
             sessionStorage.setItem('app_settings', JSON.stringify(initialData));
         } else {
