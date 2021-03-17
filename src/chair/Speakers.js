@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useCommitteeContext } from '../contexts/CommitteeContext';
 
+import SearchIcon from '../assets/icons/search.svg';
+
 const Speakers = (props) => {
 
     const { getSettings, getCountries, setCountries, setPushNext } = useCommitteeContext();
@@ -25,6 +27,9 @@ const Speakers = (props) => {
     const [timerID, setTimerID] = useState([]); // use to set/clear interval function
     const [ticking, setTicking] = useState(false);
 
+    const [search, setSearch] = useState('');
+    const [addedSpeakers, setAddedSpeakers] = useState([]);
+
     const max = 60;
 
     // update present/present & voting countries
@@ -47,22 +52,84 @@ const Speakers = (props) => {
         } else {
             sessionStorage.removeItem('speakerScreen');
         }
-    } , [screen])
+    } , [screen]);
+
+    function updateSpeakersArray(init) {
+        if(!init) {
+            let speakerIDs = [];
+    
+            for(let i = 0; i < speakersList.length; i++) {
+                speakerIDs.push(speakersList[i]._id);
+            }
+    
+            setAddedSpeakers(speakerIDs);
+        } else {
+            // given data
+            
+            let speakerIDs = [];
+    
+            for(let i = 0; i < init.length; i++) {
+                speakerIDs.push(init[i]._id);
+            }
+    
+            setAddedSpeakers(speakerIDs);
+        }
+    }
+
+    // only for single speaker
+    function handleSetSpeaker(speaker) {
+        setActiveSpeaker(speaker)
+    }
 
     // update countries display
     useEffect(() => {
         let return_val = [];
 
-        for(let i = 0; i < presentCountries.length; i++) {
-            return_val.push(
-                <div className='country-to-add' onClick={e=>handleAddToList(presentCountries[i]._id)}>
-                    {presentCountries[i].name}
-                </div>
-            )
+        if(screen === 'Primary' || screen === 'Secondary') {
+            if(search) {
+                for(let i = 0; i < presentCountries.length; i++) {
+                    if(presentCountries[i].name.toLowerCase().search(search.toLowerCase()) > -1) {
+                        return_val.push(
+                            <div className={`country-to-add speaker-item ${(addedSpeakers.includes(presentCountries[i]._id)) ? 'added' : ''}`} onClick={e=>handleAddToList(presentCountries[i]._id)}>
+                                {presentCountries[i].name}
+                            </div>
+                        );
+                    }
+                }
+            } else {
+                for(let i = 0; i < presentCountries.length; i++) {
+                    return_val.push(
+                        <div className={`country-to-add speaker-item ${(addedSpeakers.includes(presentCountries[i]._id)) ? 'added' : ''}`} onClick={e=>handleAddToList(presentCountries[i]._id)}>
+                            {presentCountries[i].name}
+                        </div>
+                    )
+                }
+            }
+        } else {
+            if(search) {
+                for(let i = 0; i < presentCountries.length; i++) {
+                    if(presentCountries[i].name.toLowerCase().search(search.toLowerCase()) > -1) {
+                        return_val.push(
+                            <div className={`country-to-add speaker-item`} onClick={e=>handleSetSpeaker(presentCountries[i])}>
+                                {presentCountries[i].name}
+                            </div>
+                        );
+                    }
+                }
+            } else {
+                for(let i = 0; i < presentCountries.length; i++) {
+                    return_val.push(
+                        <div className={`country-to-add speaker-item`} onClick={e=>handleSetSpeaker(presentCountries[i])}>
+                            {presentCountries[i].name}
+                        </div>
+                    );
+                }
+            }
         }
 
+
         setDisplayCountries(return_val);
-    }, [presentCountries, refresh]);
+    }, [presentCountries, search, refresh, speakersList]);
 
     // update countries list (after added from countries display above)
     useEffect(() => {
@@ -99,11 +166,13 @@ const Speakers = (props) => {
                 let country = presentCountries.filter(item=>item._id===country_id)[0];
                 newList.push(country);
             }
-            
+
+            updateSpeakersArray();
             setShowStart(true);
             setSpeakersList(newList);
             triggerRefresh();
         }
+
         saveState(newList);
     }
 
@@ -116,8 +185,10 @@ const Speakers = (props) => {
 
         if(newList.length === 0) {
             setShowStart(false);
-            setShowRemove(false);
         }
+
+        updateSpeakersArray();
+        setShowRemove(false);
         setSelectedSpeakers([]);
         setSpeakersList(newList);
         triggerRefresh();
@@ -125,6 +196,8 @@ const Speakers = (props) => {
     }
 
     function handleRemoveAll() {
+
+        updateSpeakersArray([]);
         setSpeakersList([]);
         setSelectedSpeakers([]);
         saveState([]);
@@ -227,14 +300,12 @@ const Speakers = (props) => {
             let countryToUpdate = countries.find(item=>item._id===activeSpeaker._id); // country to update
             let updateCountry = {};
             if(screen === 'Primary') {
-                console.log(countryToUpdate.stats_secondary, timeElapsed);
                 updateCountry = {
                     ...countryToUpdate,
                     stats_primary: parseInt(countryToUpdate.stats_primary) + timeElapsed
                 };
 
             } else if (screen === 'Secondary') {
-                console.log(countryToUpdate.stats_secondary, timeElapsed);
                 updateCountry = {
                     ...countryToUpdate,
                     stats_secondary: parseInt(countryToUpdate.stats_secondary) + timeElapsed
@@ -331,14 +402,14 @@ const Speakers = (props) => {
     }, [screen]);
 
     return (
-        <div className='app-inner'>
+        <div className='app-inner speakers'>
             <div className='app-inner-inner speakers'>
                 <div className='one-liner'>
                     <h1>Speakers</h1>
                     <div className='speaker-lists'>
-                        <div className={`speaker-type ${(screen === 'Primary') ? 'active' : ''}`} onClick={e=>setScreen('Primary')}>Primary</div>
-                        <div className={`speaker-type ${(screen === 'Secondary') ? 'active' : ''}`} onClick={e=>setScreen('Secondary')}>Secondary</div>
-                        <div className={`speaker-type ${(screen === 'Single') ? 'active' : ''}`} onClick={e=>setScreen('Single')}>Single</div>
+                        <div className={`speaker-type ${(screen === 'Primary') ? 'active' : ''}`} onClick={e=>{setSearch(''); updateSpeakersArray(sessionStorage.getItem('speakersDataPrimary') ? JSON.parse(sessionStorage.getItem('speakersDataPrimary')).list : []); setScreen('Primary')}}>Primary</div>
+                        <div className={`speaker-type ${(screen === 'Secondary') ? 'active' : ''}`} onClick={e=>{setSearch(''); updateSpeakersArray(sessionStorage.getItem('speakersDataSecondary') ? JSON.parse(sessionStorage.getItem('speakersDataSecondary')).list : []); setScreen('Secondary')}}>Secondary</div>
+                        <div className={`speaker-type ${(screen === 'Single') ? 'active' : ''}`} onClick={e=>{setSearch(''); setScreen('Single')}}>Single</div>
                     </div>
                 </div>
                 <div className='speakers-inner'>
@@ -350,10 +421,18 @@ const Speakers = (props) => {
                                 {(activeSpeaker) ? ((activeSpeaker.name) ? (
                                     <>
                                         <div className='speaker'>
-                                            {activeSpeaker.name}
+                                            {(activeSpeaker.country_code) ? (
+                                                <img src={`https://www.countryflags.io/${activeSpeaker.country_code}/flat/64.png`} />
+                                            ) : (
+                                                <img src={activeSpeaker.country_flag_base} />
+                                            )}
+                                            <h2>{activeSpeaker.name}</h2>
                                         </div>
                                         <div className='speaker-timer'>
-                                            {time}/60
+                                            <div className='timer-container'>
+                                                <div className={`elapsed`} style={{width: (time / max * 100) + '%'}}></div>
+                                            </div>
+                                            {time} seconds
                                         </div>
                                         <div className='speaker-action'>
                                             {(ticking) ? (
@@ -362,7 +441,7 @@ const Speakers = (props) => {
                                                 </div>
                                             ) : (
                                                 <div className='button' onClick={e=>speakingResume()}>
-                                                    Resume
+                                                    Start
                                                 </div>
                                             )}
                                             <div className='button' onClick={e=>speakingReset()}>
@@ -373,45 +452,69 @@ const Speakers = (props) => {
                                             </div>
                                         </div>
                                     </>
-                                ) : 'Speaker List Inactive') : 'Speaker List Inactive'}
+                                ) : (
+                                    <div className='inactive'>
+                                        Speaker List Inactive
+                                    </div>
+                                    )) : (
+                                    <div className='inactive'>
+                                        Speaker List Inactive
+                                    </div>
+                                )}
                             </div>
                             <div className={`speakers-bot ${started ? 'speaking' : ''}`}>
-                                <div className={`speakers-add ${started ? 'disabled' : ''}`}>
-                                    <h3>Add Speakers</h3>
-                                    {displayCountries}
-                                </div>
-                                <div className='speakers-list'>
-                                    <h3>Speaker List</h3>
-                                    {displayList}
-                                    {(showRemove) ? (
-                                        (started) ? '' : (
-                                            <div className='remove' onClick={e=>handleRemoveSelected()}>
-                                                Remove
+                                <div className='pants'>
+                                    <div className={`speakers-add ${started ? 'disabled' : ''}`}>
+                                        <h3>Add Speakers</h3>
+                                        <div className='speaker-container'>
+                                            <div className='speaker-search'>
+                                                <img src={SearchIcon} />
+                                                <input type="text" value={search} onChange={e=>setSearch(e.target.value.replace(/\\/g, ''))} />
                                             </div>
-                                        )
-                                    ) : ''}
+                                            <div className='speaker-list'>
+                                                {displayCountries}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className='speakers-manage'>
-                                    <h3>Manage Speeches</h3>
-                                    <div className='manage-field'>
-                                        {(showStart) ? (
-                                            (started) ? (
-                                                <div className='start' onClick={e=>handleStop()}>
-                                                    Stop
-                                                </div>
-                                            ) : (
-                                                <div className='start' onClick={e=>handleStart()}>
-                                                    Start
-                                                </div>
-                                            )
-                                        ) : ''}
-                                        {(showStart) ? (
+                                <div className='pants'>
+                                    <div className='speakers-list'>
+                                        <h3>Speaker List</h3>
+                                        <div className='speaker-list'>
+                                            {displayList}
+                                        </div>
+                                        {(showRemove) ? (
                                             (started) ? '' : (
-                                                <div className='button' onClick={e=>handleRemoveAll()}>
-                                                    Clear List
+                                                <div className='remove' onClick={e=>handleRemoveSelected()}>
+                                                    Remove
                                                 </div>
                                             )
                                         ) : ''}
+                                    </div>
+                                </div>
+                                <div className='pants'>
+                                    <div className='speakers-manage'>
+                                        <h3>Manage Speeches</h3>
+                                        <div className='manage-field'>
+                                            {(showStart) ? (
+                                                (started) ? (
+                                                    <div className='start' onClick={e=>handleStop()}>
+                                                        Stop
+                                                    </div>
+                                                ) : (
+                                                    <div className='start' onClick={e=>handleStart()}>
+                                                        Start
+                                                    </div>
+                                                )
+                                            ) : ''}
+                                            {(showStart) ? (
+                                                (started) ? '' : (
+                                                    <div className='button' onClick={e=>handleRemoveAll()}>
+                                                        Clear List
+                                                    </div>
+                                                )
+                                            ) : ''}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -421,6 +524,64 @@ const Speakers = (props) => {
                 {(screen === 'Single') ? (
                     <div className='single-list'>
                         <h2>Single Speaker</h2>
+                        <div className='speaker-wrapper'>
+                            <div className='speakers-container'>
+                                {(activeSpeaker) ? ((activeSpeaker.name) ? (
+                                    <>
+                                        <div className='speaker'>
+                                            {(activeSpeaker.country_code) ? (
+                                                <img src={`https://www.countryflags.io/${activeSpeaker.country_code}/flat/64.png`} />
+                                            ) : (
+                                                <img src={activeSpeaker.country_flag_base} />
+                                            )}
+                                            <h2>{activeSpeaker.name}</h2>
+                                        </div>
+                                        <div className='speaker-timer'>
+                                            <div className='timer-container'>
+                                                <div className={`elapsed`} style={{width: (time / max * 100) + '%'}}></div>
+                                            </div>
+                                            {time} seconds
+                                        </div>
+                                        <div className='speaker-action'>
+                                            {(ticking) ? (
+                                                <div className='button' onClick={e=>speakingPause()}>
+                                                    Pause
+                                                </div>
+                                            ) : (
+                                                <div className='button' onClick={e=>speakingResume()}>
+                                                    Start
+                                                </div>
+                                            )}
+                                            <div className='button' onClick={e=>speakingReset()}>
+                                                Reset Time
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className='inactive'>
+                                        Select Speaker
+                                    </div>
+                                    )) : (
+                                    <div className='inactive'>
+                                        Select Speaker
+                                    </div>
+                                )}
+                            </div>
+                            <div className='country-picker'>
+                                <div className={`speakers-add ${started ? 'disabled' : ''}`}>
+                                    <h3>Add Speakers</h3>
+                                    <div className='speaker-container'>
+                                        <div className='speaker-search'>
+                                            <img src={SearchIcon} />
+                                            <input type="text" value={search} onChange={e=>setSearch(e.target.value.replace(/\\/g, ''))} />
+                                        </div>
+                                        <div className='speaker-list'>
+                                            {displayCountries}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 ) : ''}
                 {(!screen) ? (

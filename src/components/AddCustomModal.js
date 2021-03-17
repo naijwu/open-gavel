@@ -124,7 +124,7 @@ const AddCountryModal = (props) => {
                     <div className='modal-input-group'>
                         <h4>Upload Flag</h4>
                         <div className='file-upload-bay'>
-                            <input type='file' id="file" className='file-input' onChange={e=>handleFileUpload(e)} />
+                            <input type='file' accept="image/png, image/jpeg" id="file" className='file-input' onChange={e=>handleFileUpload(e)} />
                             {(file) ? (
                                 <div className='uploaded-file'>
                                     <img src={flag} />

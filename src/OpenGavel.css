@@ -637,13 +637,15 @@ h1 {
   box-sizing: border-box;
 }
 
-.caucus .speaker-search {
+.caucus .speaker-search,
+.speakers .speaker-search {
     display:flex;
     align-items:center;
     margin-bottom:15px;
 }
 
-.caucus .speaker-search img {
+.caucus .speaker-search img,
+.speakers .speaker-search img {
     position:relative;
     margin-right:-30px;
     padding-left:10px;
@@ -651,7 +653,8 @@ h1 {
     width:20px;
 }
 
-.caucus .speaker-search input[type="text"] {
+.caucus .speaker-search input[type="text"],
+.speakers .speaker-search input[type="text"] {
   padding:10px 10px 10px 40px;
   outline:none;
   border:none;
@@ -674,7 +677,7 @@ h1 {
   border-radius:4px;
 }
 
-.caucus .manage-speaker .speaker-list .speaker-item {
+.caucus .manage-speaker .speaker-list {
   padding:10px;
   border-style:none none solid none;
   border-width:1px;
@@ -861,13 +864,18 @@ h1 {
     justify-content: space-between;
 }
 
+.speakers-bot .pants {
+    width:31%;
+    box-sizing: border-box;
+}
+
 .speakers-add,
 .speakers-list,
 .speakers-manage {
     box-sizing: border-box;
     padding:20px;
     background:white;
-    width:31%;
+    width:100%;
 }
 
 .speakers-container {
@@ -879,14 +887,171 @@ h1 {
     opacity:0.420;
 }
 
+.speakers .country-in-list {
+    padding:10px;
+    background:#EEE;
+    border-style:none none solid none;
+    border-width:1px;
+    border-color:#CCC;
+    cursor:pointer;
+}
+
+.speakers .country-in-list:first-child {
+    border-radius:4px 4px 0 0;
+}
+.speakers .country-in-list:last-child {
+    border:none;
+    border-radius:0 0 4px 4px;
+}
+
 .country-in-list.selected {
-    background:yellow;
+    background:var(--colour-blue-light);
 }
 
 .speakers-bot.speaking .country-in-list.selected {
     background:none;
 }
 
+.speakers .remove,
+.speakers .start,
+.speakers .button {
+    padding:10px 15px;
+    margin-top:15px;
+    display:table;
+    border-radius:4px;
+    cursor:pointer;
+    font-weight:500;
+}
+
+.speakers .remove {
+    background:var(--colour-red-light);
+    color:var(--colour-red);
+}
+
+.speakers .remove:hover {
+    background:var(--colour-red);
+    color:white;
+}
+
+.speakers .start {
+    background:var(--colour-green-light);
+    color:var(--colour-green);
+}
+
+.speakers .start:hover {
+    background:var(--colour-green);
+    color:white;
+}
+
+.speakers .button {
+    background:var(--colour-orange-light);
+    color:var(--colour-orange);
+}
+
+.speakers .button:hover {
+    background:var(--colour-orange);
+    color:white;
+}
+
+.speakers .speaker-list {
+    border-radius:4px;
+    max-height:500px;
+}
+
+.speakers-bot h3,
+.country-picker h3 {
+    padding-bottom:15px;
+}
+
+.speakers .country-to-add {
+    padding:10px;
+    background:#EEE;
+    border-style:none none solid none;
+    border-width:1px;
+    border-color:#CCC;
+    cursor:pointer;
+}
+
+.speakers .country-to-add:first-child {
+    border-radius:4px 4px 0 0;
+}
+
+.speakers .country-to-add:last-child {
+    border-radius:0 0 4px 4px;
+    border-style:none;
+}
+
+.speakers .country-to-add:hover {
+    background:rgb(228, 228, 228);
+}
+
+.speakers .country-to-add.added {
+    background:rgb(199, 199, 199);
+    cursor:default;
+}
+
+.speakers .speaker {
+    margin:50px 0 0 0;
+    padding:30px 0 20px 0;
+    background:white;
+    border-radius:4px 4px 0 0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.speakers .speaker h2 {
+    color:black;
+}
+
+.speaker-action,
+.speaker-timer {
+    background: hsla(0,0%,100%,.425);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 0 10px rgb(0 0 0 / 1%);
+}
+
+.speaker-timer {
+    text-align:center;
+}
+
+.speaker-timer .elapsed {
+    margin-bottom:20px;
+}
+
+.speaker-timer .timer-container {
+    background:#CCC;
+}
+
+.speaker-action {
+    display:flex;
+    justify-content: center;
+    padding: 10px 0 20px 0;
+}
+
+.speaker-action .button {
+    background:#EEE;
+    color:black;
+    margin-right:15px;
+}
+
+.speaker-action .button:last-child {
+    margin-right:0;
+}
+
+.speaker-action .button:hover {
+    background:#CCC;
+    color:black;
+}
+
+.speakers .inactive {
+    padding:100px 0;
+    text-align:center;
+    color:#CCC;
+    font-weight:500;
+}
 
 
 
