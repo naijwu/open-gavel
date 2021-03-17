@@ -198,35 +198,35 @@ export default function Register() {
                             <h1>Register</h1>
                             <div className={`input-group err${(inputErrors.fn) ? 'true' : ''}`}>
                                 <h3>First Name</h3>
-                                <input type="text" value={firstName} onChange={e=>setFirstName(e.target.value.replace(/[^\w\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <input type="text" value={firstName} onChange={e=>setFirstName(e.target.value.replace(/[^\w\s\-\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
                                 <div className='input-error'>
                                     {inputErrors.fn}
                                 </div>
                             </div>
                             <div className={`input-group err${(inputErrors.ln) ? 'true' : ''}`}>
                                 <h3>Last Name</h3>
-                                <input type="text" value={lastName} onChange={e=>setLastName(e.target.value.replace(/[^\w\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <input type="text" value={lastName} onChange={e=>setLastName(e.target.value.replace(/[^\w\s\'\-\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
                                 <div className='input-error'>
                                     {inputErrors.ln}
                                 </div>
                             </div>
                             <div className={`input-group err${(inputErrors.cn) ? 'true' : ''}`}>
                                 <h3>Conference Name</h3>
-                                <input type="text" value={conferenceFullName} onChange={e=>setConferenceFullName(e.target.value.replace(/[^\w\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <input type="text" value={conferenceFullName} onChange={e=>setConferenceFullName(e.target.value.replace(/[^\w\s\'\-\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
                                 <div className='input-error'>
                                     {inputErrors.cn}
                                 </div>
                             </div>
                             <div className={`input-group err${(inputErrors.acn) ? 'true' : ''}`}>
                                 <h3>Abbreviated Conference Name</h3>
-                                <input type="text" value={conference} onChange={e=>setConference(e.target.value.replace(/[^\w\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <input type="text" value={conference} onChange={e=>setConference(e.target.value.replace(/[^\w\-\s\'\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
                                 <div className='input-error'>
                                     {inputErrors.acn}
                                 </div>
                             </div>
                             <div className={`input-group err${(inputErrors.em) ? 'true' : ''}`}>
                                 <h3>Email</h3>
-                                <input type="text" value={email} onChange={e=>setEmail(e.target.value.replace(/[^\w\.\@\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
+                                <input type="text" value={email} onChange={e=>setEmail(e.target.value.replace(/[^\w\.\@\-\zàâçéèêëîïôûùüÿñæœ]/gi, ''))} />
                                 <div className='input-error'>
                                     {inputErrors.em}
                                 </div>
