@@ -6,6 +6,8 @@ Node back-end is on a separate repo (open-gavel-server)
 
 Link: https://opengavel.app
 
+The code is pretty terrible lmaoo I will have to return to revising it later
+
 # Create React App commands...
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
