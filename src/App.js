@@ -2,6 +2,10 @@ import './App.css';
 import React, { useState, useMemo } from 'react'; 
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 
+import {loadStripe} from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+//import CheckoutForm from "./CheckoutForm";
+
 import Main from './Main';
 import Login from './Login';
 import ForgotPass from './ForgotPass';
@@ -65,8 +69,8 @@ function App() {
       />
     );
   }
-
-  return (
+//find a way to add checkout route for donations...  
+ return (
     <AuthProvider>
       <CommitteeProvider>
         <Switch>
