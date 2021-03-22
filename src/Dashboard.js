@@ -53,7 +53,6 @@ const Dashboard = () => {
         }).catch((err) => {
             setCommitteesList(err);
         });
-
     }, []);
 
     const displayCommitteeAccounts = () => {
@@ -103,7 +102,7 @@ const Dashboard = () => {
 
         if(userData[type] !== value) {
             // if new value, add to patchBody
-            patchBody[type] = value;
+            patchBody[type] = value.trim();
         } else {
             // no changes made
             return setEditModal('');
@@ -128,11 +127,11 @@ const Dashboard = () => {
     const handleCreateCommittee = (name, username, password) => {
         
         let postBody = {
-            committee: name,
-            username: username,
-            password: password,
-            conference: userData.conference
-        }
+            committee: name.trim(),
+            username: username.trim(),
+            password: password.trim(),
+            conference: userData.conference,
+        };
 
         axios.post(`${API_URL}/staff`, postBody, {
             headers: {
@@ -181,9 +180,9 @@ const Dashboard = () => {
     const handleCommitteeUpdate = (id, name, username, password) => {
 
         let postBody = {
-            committee: name,
-            username: username,
-            password: password
+            committee: name.trim(),
+            username: username.trim(),
+            password: password.trim()
         }
 
         axios.post(`${API_URL}/staff/${id}`, postBody, {

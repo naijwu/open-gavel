@@ -162,12 +162,12 @@ export default function Register() {
         try {
             // fetch data from a url endpoint
             const response = await axios.post(`${API_URL}/authentication/secretariat/register`, {
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                email: email.trim(),
                 password: password,
-                conferenceFullName: conferenceFullName,
-                conference: conference
+                conferenceFullName: conferenceFullName.trim(),
+                conference: conference.trim(),
             });
             const data = await response.json();
 
