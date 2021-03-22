@@ -45,11 +45,7 @@ export function CommitteeProvider({ children }) {
         // pull data from database
         sessionStorage.setItem('countries', JSON.stringify(data.countries));
         sessionStorage.setItem('statistics', JSON.stringify(data.statistics));
-        if(data.app_settings) {
-            sessionStorage.setItem('app_settings', JSON.stringify(data.app_settings));
-        } else {
-            setSettings('new');
-        }
+        sessionStorage.setItem('app_settings', JSON.stringify(data.app_settings));
         sessionStorage.setItem('currentPage', data.app_settings.default_start_screen);
         sessionStorage.setItem('pushNext', 'false');
     }

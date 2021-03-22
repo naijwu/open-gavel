@@ -145,7 +145,7 @@ const Dashboard = () => {
             history.go(0);
         }).catch((err) => {
             
-            setCommitteeError(err.message);
+            setCommitteeError(err.response.data.message);
         });
     }
 
