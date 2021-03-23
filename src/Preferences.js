@@ -428,11 +428,11 @@ const Preferences = () => {
                                         <div className='del-stat-selector'>
                                             <div className={`selector primary ${primaryChecked}`} onClick={e=>handleFilter('p')}>
                                                 <div className='checkmark'></div>
-                                                <p>Primary Speeches</p>
+                                                <p>Primary Speakers'</p>
                                             </div>
                                             <div className={`selector secondary ${secondaryChecked}`} onClick={e=>handleFilter('s')}>
                                                 <div className='checkmark'></div>
-                                                <p>Secondary Speeches</p>
+                                                <p>Secondary Speakers'</p>
                                             </div>
                                             <div className={`selector caucus ${caucusChecked}`} onClick={e=>handleFilter('c')}>
                                                 <div className='checkmark'></div>

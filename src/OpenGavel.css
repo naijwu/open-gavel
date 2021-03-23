@@ -982,6 +982,10 @@ h1 {
     padding-bottom:15px;
 }
 
+.speakers .speaker-list {
+    overflow:auto;
+}
+
 .speakers .country-to-add {
     padding:10px;
     background:#EEE;

@@ -2,9 +2,6 @@ import './App.css';
 import React, { useState, useMemo } from 'react'; 
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 
-import {loadStripe} from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-
 import Checkout from "./Checkout";
 import Main from './Main';
 import Login from './Login';
@@ -19,9 +16,6 @@ import Profile from './Profile';
 
 import { AuthProvider, useAuthContext } from './authentication/AuthContext';
 import { CommitteeProvider } from './contexts/CommitteeContext';
-
-//testing purposes will put in an env
-const promise = loadStripe(process.env.PUBLIC_STRIPE_KEY)
 
 function App() {
   
@@ -82,10 +76,9 @@ function App() {
           <Route exact path='/login' component={Login} />
           <Route exact path='/login/password-reset' component={ForgotPass} />
           <Route exact path='/register' component={Register} />
-          <Elements stripe={promise}>
-            <Route exact path='/donate' component={Checkout}/>
-          </Elements>
-
+          
+          <Route exact path='/donate' component={Checkout}/>
+          
           <AuthRoute exact path='/support' component={Support} />
 
           <AuthStaffRoute exact path='/chair' component={Chair} />

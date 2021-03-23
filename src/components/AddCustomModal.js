@@ -123,15 +123,20 @@ const AddCountryModal = (props) => {
                     </div>
                     <div className='modal-input-group'>
                         <h4>Upload Flag</h4>
+                        <p className='max-size'>
+                            Flags with resolutions up to 200x200 are currently supported.
+                        </p>
                         <div className='file-upload-bay'>
                             <input type='file' accept="image/png, image/jpeg" id="file" className='file-input' onChange={e=>handleFileUpload(e)} />
                             {(file) ? (
-                                <div className='uploaded-file'>
-                                    <img src={flag} />
+                                <>
+                                    <div className='uploaded-file'>
+                                        <img src={flag} />
+                                    </div>
                                     <div className='file-name'>
                                         {file.name}
                                     </div>
-                                </div>
+                                </>
                             ) : ''}
                             <label for="file" className='file-label'>{(file) ? 'Upload Different' : 'Upload Image'}</label>
                         </div>

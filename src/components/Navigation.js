@@ -47,10 +47,9 @@ const Navigation = () => {
                         </>
                     ) : (
                         <>
+                            <NavLink className='nav-link' to="/donate">Donate</NavLink>
                             <NavLink className='nav-link member' to="/login">Login</NavLink>
                             <NavLink className='nav-link member' to="/register">Register</NavLink>
-
-                            <NavLink className='nav-link member' to="/donate">Donate</NavLink>
                         </>
                     )}
                 </div>

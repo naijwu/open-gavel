@@ -90,13 +90,13 @@ const MotionItem = (props) => {
                     <div className='time-input'>
                         {(type === 'Moderated Caucus' || type === 'Unmoderated Caucus') ? (
                             <div className='input-group'>
-                                Total Time
+                                Total (m)
                                 <input value={total} onChange={e=>updateTotal(e)} type='text' />
                             </div>
                         ) : ''}
                         {(type === 'Moderated Caucus' || type === 'Round Table') ? (
                             <div className='input-group'>
-                                Speaking Time
+                                Speaking (m)
                                 <input value={speaking} onChange={e=>updateSpeaking(e)} type='text' />
                             </div>
                         ) : ''}
