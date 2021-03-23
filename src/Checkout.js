@@ -17,10 +17,17 @@ const Field = ({
     value,
     onChange
 }) => (
+<<<<<<< Updated upstream
     <div className="payment-form-row">
         <label htmlFor={id} className="payment-form-label">
             {label}
         </label>
+=======
+    <div>
+        {/*<label htmlFor={id} className="payment-form-label">
+            {label}
+        </label>*/}
+>>>>>>> Stashed changes
         <input
             className="payment-form-input"
             id={id}
@@ -114,6 +121,7 @@ export default function Checkout(){
     };
 
     return(
+<<<<<<< Updated upstream
         <>
             <Navigation />
             <form id="payment-form" onSubmit={handleSubmit}>
@@ -154,6 +162,64 @@ export default function Checkout(){
                 </p>
             </form>
         </>
+=======
+        <form id="payment-form" onSubmit={handleSubmit}>
+            <Field
+                id="name"
+                type="text"
+                placeholder="Name"
+                required
+                autoComplete="name"
+                value={billingDetails.name}
+                onChange={(e) => {
+                    setBillingDetails({ ...billingDetails, name: e.target.value });
+                }}
+                />
+                <Field
+                    id="email"
+                    type="text"
+                    placeholder="Email"
+                    required
+                    autoComplete="email"
+                    value={billingDetails.email}
+                    onChange={(e) => {
+                        setBillingDetails({ ...billingDetails, email: e.target.value });
+                    }}
+                />
+                <Field
+                    id="phone"
+                    type="tel"
+                    placeholder="Phone"
+                    required
+                    autoComplete="Phone"
+                    value={billingDetails.phone}
+                    onChange={(e) => {
+                        setBillingDetails({ ...billingDetails, phone: e.target.value });
+                    }}
+                />
+
+            <CardElement id="card-element" options={cardStyle} onChange={handleChange}/>
+
+            <button className="pay-button" disabled={processing || disabled || succeeded} id="submit">
+
+                <span id="button-text">
+                    {processing ? (
+                        <div className="spinner" id="spinner"></div>
+                    ): (
+                        "Pay Now"
+                    )}
+                </span>
+            </button>
+            {error && (
+                <div className="card-error" role="alert">
+                    {error}
+                </div>
+            )}
+            <p className={succeeded ? "result-message": "result-message hidden"}>
+                Payment succeeded!
+            </p>
+        </form>
+>>>>>>> Stashed changes
     )
 
 

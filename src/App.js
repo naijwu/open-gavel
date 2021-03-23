@@ -17,6 +17,12 @@ import Profile from './Profile';
 import { AuthProvider, useAuthContext } from './authentication/AuthContext';
 import { CommitteeProvider } from './contexts/CommitteeContext';
 
+<<<<<<< Updated upstream
+=======
+//testing purposes will put in an env
+const promise = loadStripe("pk_test_51G6WxqGdNKtofFw2p4pKuxr7ZnME1vOuKp3YoqxfTcfZW344gNLt3oHoloZWWonRHhCaftpSlYCD2UPSRl7ihBqb00trYkfCZL")
+
+>>>>>>> Stashed changes
 function App() {
   
   function AuthRoute({ component: Component, ...rest }) {
