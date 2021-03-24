@@ -1797,13 +1797,23 @@ p.max-size {
 }
 
 /*Stripe payment styles*/
+.payment-container{
+  display: flex;
+    justify-content: center;
+    width: var(--wide-container);
+    margin: 0 auto;
+    padding-bottom: 100px;
+}
+
 #payment-form{
-  width: 30vw; align-self: center;
+  width: 500px; 
+  align-self: center;
   box-shadow: 0 0 10px rgb(0 0 0 / 1%);
   border-radius: 7px;
   padding: 40px;
   background: hsla(0,0%,100%,.425);
-  box-sizing: border-box
+  box-sizing: border-box;
+  margin-top: 10vh;
 }
 
 .payment-form-input{

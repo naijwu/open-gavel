@@ -112,6 +112,7 @@ export default function Checkout(){
     };
 
     return(
+        <div className="payment-container">
         <form id="payment-form" onSubmit={handleSubmit}>
             <Field
                 id="name"
@@ -168,6 +169,7 @@ export default function Checkout(){
                 Payment succeeded!
             </p>
         </form>
+        </div>
     )
 
 
