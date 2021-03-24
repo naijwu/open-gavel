@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
-import {CardElement, useStripe, useElements} from "@stripe/react-stripe-js";
+import {CardElement, useStripe, useElements,  Elements} from "@stripe/react-stripe-js";
 import { API_URL } from './config.js';
 import Navigation from "./components/Navigation.js";
 
 import {loadStripe} from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
 
 const Field = ({
     label,
@@ -17,17 +16,10 @@ const Field = ({
     value,
     onChange
 }) => (
-<<<<<<< Updated upstream
-    <div className="payment-form-row">
-        <label htmlFor={id} className="payment-form-label">
-            {label}
-        </label>
-=======
     <div>
         {/*<label htmlFor={id} className="payment-form-label">
             {label}
         </label>*/}
->>>>>>> Stashed changes
         <input
             className="payment-form-input"
             id={id}
@@ -41,10 +33,10 @@ const Field = ({
     </div>
 )
 
-export default function Checkout(){
+const promise = loadStripe('pk_test_51G6WxqGdNKtofFw2p4pKuxr7ZnME1vOuKp3YoqxfTcfZW344gNLt3oHoloZWWonRHhCaftpSlYCD2UPSRl7ihBqb00trYkfCZL');
 
-    //testing purposes will put in an env
-    const promise = loadStripe(process.env.PUBLIC_STRIPE_KEY);
+
+export default function Checkout(){
 
     const [succeeded, setSucceeded] = useState(false);
     const [error, setError] = useState(null);
@@ -121,48 +113,6 @@ export default function Checkout(){
     };
 
     return(
-<<<<<<< Updated upstream
-        <>
-            <Navigation />
-            <form id="payment-form" onSubmit={handleSubmit}>
-                <fieldset className="payment-form-group">
-                    <Field
-                        label="Name"
-                        id="name"
-                        type="text"
-                        placeholder="Jane Doe"
-                        required
-                        autoComplete="name"
-                        value={billingDetails.name}
-                        onChange={(e) => {
-                            setBillingDetails({ ...billingDetails, name: e.target.value });
-                        }}
-                    />
-                </fieldset>
-
-                <CardElement id="card-element" options={cardStyle} onChange={handleChange}/>
-
-                <button className="pay-button" disabled={processing || disabled || succeeded} id="submit">
-
-                    <span id="button-text">
-                        {processing ? (
-                            <div className="spinner" id="spinner"></div>
-                        ): (
-                            "Pay Now"
-                        )}
-                    </span>
-                </button>
-                {error && (
-                    <div className="card-error" role="alert">
-                        {error}
-                    </div>
-                )}
-                <p className={succeeded ? "result-message": "result-message hidden"}>
-                    Payment succeeded!
-                </p>
-            </form>
-        </>
-=======
         <form id="payment-form" onSubmit={handleSubmit}>
             <Field
                 id="name"
@@ -219,7 +169,6 @@ export default function Checkout(){
                 Payment succeeded!
             </p>
         </form>
->>>>>>> Stashed changes
     )
 
 
