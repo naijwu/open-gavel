@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
-import {CardElement, useStripe, useElements,  Elements} from "@stripe/react-stripe-js";
+import {CardElement, useStripe, useElements} from "@stripe/react-stripe-js";
 import { API_URL } from './config.js';
 import Navigation from "./components/Navigation.js";
 
-import {loadStripe} from "@stripe/stripe-js";
 
 const Field = ({
     label,
@@ -33,7 +32,6 @@ const Field = ({
     </div>
 )
 
-const promise = loadStripe('pk_test_51G6WxqGdNKtofFw2p4pKuxr7ZnME1vOuKp3YoqxfTcfZW344gNLt3oHoloZWWonRHhCaftpSlYCD2UPSRl7ihBqb00trYkfCZL');
 
 
 export default function Checkout(){
@@ -48,6 +46,7 @@ export default function Checkout(){
         phone: "",
         name: ""
       });
+    
     const stripe = useStripe();
     const elements = useElements();
     

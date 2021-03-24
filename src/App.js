@@ -2,7 +2,7 @@ import './App.css';
 import React, { useState, useMemo } from 'react'; 
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 
-import Checkout from "./Checkout";
+import CheckoutRender from "./CheckoutRender";
 import Main from './Main';
 import Login from './Login';
 import ForgotPass from './ForgotPass';
@@ -68,7 +68,7 @@ function App() {
       />
     );
   }
-   
+
  return (
     <AuthProvider>
       <CommitteeProvider>
@@ -79,7 +79,7 @@ function App() {
           <Route exact path='/login/password-reset' component={ForgotPass} />
           <Route exact path='/register' component={Register} />
           
-          <Route exact path='/donate' component={Checkout}/>
+          <Route exact path='/donate' component={CheckoutRender}/>
           
           <AuthRoute exact path='/support' component={Support} />
 
