@@ -467,6 +467,7 @@ h1 {
     cursor:pointer;
     font-size:16px;
     margin-top:10px;
+    max-width: 220px;
 }
 
 .motions-grid .motion-item {
@@ -1095,6 +1096,9 @@ h1 {
     margin:0 auto;
     width:50%;
     padding:100px 0;
+    
+    height:100vh;
+    overflow:hidden;
 }
 
 .present-wrapper h2 {

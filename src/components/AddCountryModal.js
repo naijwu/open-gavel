@@ -42,7 +42,7 @@ const AddCountryModal = (props) => {
                 <div className={`country-item ${countries[i].country_code}A`} onClick={e=>handleCountrySelect(countries[i].country_code + 'A')}>
                     <div className='checked'></div>
                     <p>{countries[i].name}</p>
-                    <img src={`https://www.countryflags.io/${countries[i].country_code}/flat/32.png`} />
+                    {/* <img src={`https://www.countryflags.io/${countries[i].country_code}/flat/32.png`} /> */}
                 </div>
             );
         }

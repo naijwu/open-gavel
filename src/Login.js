@@ -76,6 +76,17 @@ export default function Login() {
         setLoading(false);
     }
 
+    const handleKeyDown = (e, type) => {
+        if(e.key === 'Enter') {
+            if (type === "secretariat") {
+                handleSubmit(e)
+            }
+            if (type === "staff") {
+                handleSubmitStaff(e)
+            }
+        }
+    }
+
 
     return (!currentUser) ? (
         <>
@@ -105,11 +116,11 @@ export default function Login() {
                                 )}
                                 <div className='input-group'>
                                     <h3>Email</h3>
-                                    <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
+                                    <input type="text" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>handleKeyDown(e, "secretariat")} />
                                 </div>
                                 <div className='input-group'>
                                     <h3>Password</h3>
-                                    <input type="password" value={secPassword} onChange={e=>setSecPassword(e.target.value)} />
+                                    <input type="password" value={secPassword} onChange={e=>setSecPassword(e.target.value)} onKeyDown={e=>handleKeyDown(e, "secretariat")} />
                                 </div>
                                 <div className='text-tray'>
                                     {/* <Link className='text-link' to='/login/password-reset' >
@@ -136,11 +147,11 @@ export default function Login() {
                                     )}
                                     <div className='input-group'>
                                         <h3>Username</h3>
-                                        <input type="text" value={username} onChange={e=>setUsername(e.target.value)} />
+                                        <input type="text" value={username} onChange={e=>setUsername(e.target.value)} onKeyDown={e=>handleKeyDown(e, "staff")} />
                                     </div>
                                     <div className='input-group'>
                                         <h3>Password</h3>
-                                        <input type="password" value={staffPassword} onChange={e=>setStaffPassword(e.target.value)} />
+                                        <input type="password" value={staffPassword} onChange={e=>setStaffPassword(e.target.value)} onKeyDown={e=>handleKeyDown(e, "staff")} />
                                     </div>
                                     <div className='text-tray'>
                                         <div className='notification'>

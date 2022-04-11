@@ -336,7 +336,7 @@ const Chair = () => {
             {(isPresenting) ? (
                 <NewWindow
                   title="Open Gavel"
-                  onBlock={e=>alert('You must enable window pop-ups to start Presentation Mode')}>
+                  onBlock={()=>alert('You must enable window pop-ups to start Presentation Mode')}>
                     <div className='present-container'>
                     {(sessionStorage.getItem('currentPage') === 'Roll Call') ? (
                         <div className='present-wrapper'>
