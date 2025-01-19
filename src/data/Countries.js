@@ -1221,7 +1221,7 @@ const countries = [
     "stats_secondary": 0
   },
   {
-    "name": "New Zealanad",
+    "name": "New Zealand",
     "country_code": "NZ",
     "country_flag_base": "",
     "presence": "",
