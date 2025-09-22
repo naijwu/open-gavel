@@ -44,6 +44,8 @@ const AddCountryModal = (props) => {
     }
 
     const sizeValid = () => {
+        if (!file) return true; // allow no flag
+
         let fileSize = ((file.size/1024)/1024).toFixed(4); // file size in MB
         
         if(fileSize > 0.05) {
@@ -53,11 +55,13 @@ const AddCountryModal = (props) => {
         return true;
     }
 
-    const submit = () => {
+    const submit = async () => {
         setLoading(true);
         setError('');
         if(nameValid()) {
             if(sizeValid()) {
+                let flagImageUrl = await props.upload(countryName, file);
+
                 let flag_base = flag;
                 if(!flag_base) {
                     flag_base = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
@@ -65,6 +69,7 @@ const AddCountryModal = (props) => {
                 let country = {
                     name: countryName,
                     country_flag_base: flag_base,
+                    country_flag_url: flagImageUrl,
                     presence: '',
                     stats_moderated: '0',
                     stats_unmoderated: '0',
@@ -100,9 +105,6 @@ const AddCountryModal = (props) => {
         setFile(file);
         let base = await toBase64(file);
         setFlag(base);
-
-        let fileSize = ((file.size/1024)/1024).toFixed(4); // file size in MB
-        console.log(typeof file, fileSize);
     }
 
     return (
@@ -138,7 +140,7 @@ const AddCountryModal = (props) => {
                                     </div>
                                 </>
                             ) : ''}
-                            <label for="file" className='file-label'>{(file) ? 'Upload Different' : 'Upload Image'}</label>
+                            <label htmlFor="file" className='file-label'>{(file) ? 'Upload Different' : 'Upload Image'}</label>
                         </div>
                     </div>
                     {(error) ? (
@@ -157,3 +159,4 @@ const AddCountryModal = (props) => {
 }
 
 export default AddCountryModal;
+
