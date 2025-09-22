@@ -44,6 +44,8 @@ const AddCountryModal = (props) => {
     }
 
     const sizeValid = () => {
+        if (!file) return true; // support no image
+        
         let fileSize = ((file.size/1024)/1024).toFixed(4); // file size in MB
         
         if(fileSize > 0.05) {
