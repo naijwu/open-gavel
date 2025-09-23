@@ -20,92 +20,78 @@ const AddCountryModal = (props) => {
     }
 
     const nameValid = () => {
-
         if(countryName === '') {
             return false;
         }
-
         // check if name is duplicate of a UN Country
         for(let i = 0; i < props.committeeCountries.length; i++) {
             if(props.committeeCountries[i].name === countryName) {
                 return false;
             }
         }
-
         // check if name is a duplicate of another committee country
         for(let i = 0; i < props.stockCountries.length; i++) {
             if(props.stockCountries[i].name === countryName) {
                 return false;
             }
         }
-
         return true;
-
     }
 
     const sizeValid = () => {
         if (!file) return true; // support no image
-
         let fileSize = ((file.size/1024)/1024).toFixed(4); // file size in MB
-        
-        if(fileSize > 2) {
-            return false;
-        }
-
+        if(fileSize > 2) return false;
         return true;
     }
 
     const submit = async () => {
+        const BLANKB64 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
         setLoading(true);
         setError('');
-        if(nameValid()) {
-            if(sizeValid()) {
-                let flagImageUrl = await props.upload(countryName, file);
-
-                // !!! note: Base64 flag code exists only for legacy support 
-                let flag_base = flag;
-                if(!flag_base) {
-                    flag_base = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        try {
+            if(nameValid()) {
+                if(sizeValid()) {
+                    let flagImageUrl = await props.upload(countryName, file);
+                    let country = {
+                        name: countryName,
+                        country_flag_base: BLANKB64, // for legacy stand-in
+                        country_flag_url: flagImageUrl,
+                        presence: '',
+                        stats_moderated: '0',
+                        stats_unmoderated: '0',
+                        stats_primary: '0',
+                        stats_secondary: '0'
+                    }
+                    
+                    props.submit(country);
+                    setCountryName('');
+                    setFlag(null);
+                    setFile(null);
+                    props.visibleFn(false);
+                } else {
+                    setError('File size is too large (2MB limit)');
+                    setLoading(false);
                 }
-                let country = {
-                    name: countryName,
-                    country_flag_base: flag_base,
-                    country_flag_url: flagImageUrl,
-                    presence: '',
-                    stats_moderated: '0',
-                    stats_unmoderated: '0',
-                    stats_primary: '0',
-                    stats_secondary: '0'
-                }
-                
-                props.submit(country);
-                setCountryName('');
-                setFlag(null);
-                setFile(null);
-                props.visibleFn(false);
             } else {
-                setError('File size is too large (2MB limit)');
+                setError('Duplicate or invalid name');
                 setLoading(false);
             }
-        } else {
-            setError('Duplicate or invalid name');
-            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            alert("There was an error uploading the custom country's flag image. Please see the console for more details and send an email (found at bottom of the site)")
         }
     }
-
-    // ty stackoverflow
-    const toBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
 
     async function handleFileUpload(e) {
         let file = e.target.files[0];
         setFile(file);
-        let base = await toBase64(file);
-        setFlag(base);
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setFlag(imageUrl);
+        } else {
+            setFlag(null);
+        }
     }
 
     return (

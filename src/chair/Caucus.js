@@ -500,7 +500,7 @@ const Caucus = (props) => {
 												{activeSpeaker.country_code ? (
 													<Flag code={activeSpeaker.country_code} size="l" />
 												) : (
-													<img alt={activeSpeaker.name} src={activeSpeaker?.country_flag_url || activeSpeaker?.country_flag_base} />
+													<img className="country-flag" alt={activeSpeaker.name} src={activeSpeaker?.country_flag_url || activeSpeaker?.country_flag_base} />
 												)}
 											</div>
 											<div className="name">

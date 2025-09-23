@@ -7,7 +7,6 @@ import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
 import AddCountryModal from "./components/AddCountryModal";
 import AddCustomModal from "./components/AddCustomModal";
-import { useHistory } from "react-router-dom";
 import { useCommitteeContext } from "./contexts/CommitteeContext";
 import Flag from "react-flagpack";
 
@@ -216,11 +215,13 @@ const Preferences = () => {
 	}
 
 	async function uploadCountryImage(countryName, imageFile) {
+		if (!imageFile) return null
 		try {
 			const formData = new FormData();
 			formData.append('image', imageFile); 
+			formData.append('countryName', countryName);
 			const response = await 
-				axios.post(`${API_URL}/committee/${userData.committee_id}/country/${countryName}`, formData, {
+				axios.post(`${API_URL}/committee/${userData.committee_id}/upload-image`, formData, {
 						headers: {
 								"Content-Type": "application/json",
 								"auth-token": currentUser,
@@ -235,18 +236,13 @@ const Preferences = () => {
 
 	function handleSubmitCustomCountry(country) {
 		let newCountries = committeeCountries;
-
 		newCountries.push(country);
-
 		let postBody = {
 			countries: newCountries,
 			statistics: statistics,
 		};
 
-		// return console.log(country);
-
-		axios
-			.post(`${API_URL}/committee/${userData.committee_id}`, postBody, {
+		axios.post(`${API_URL}/committee/${userData.committee_id}`, postBody, {
 				headers: {
 					"Content-Type": "application/json",
 					"auth-token": currentUser,
