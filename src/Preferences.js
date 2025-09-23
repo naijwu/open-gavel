@@ -300,10 +300,10 @@ const Preferences = () => {
 				>
 					<div className="checked"></div>
 					<p>{committeeCountries[i].name}</p>
-					{committeeCountries[i].country_flag_base ? (
+					{(committeeCountries[i].country_flag_base ?? committeeCountries[i].country_flag_url) ? (
 						<img
-							src={committeeCountries[i].country_flag_base}
-							alt={committeeCountries[i].country_flag_base}
+							src={committeeCountries[i].country_flag_url ?? committeeCountries[i].country_flag_base}
+							alt={committeeCountries[i]?.name}
 						/>
 					) : committeeCountries[i].country_code ? (
 						<Flag code={committeeCountries[i].country_code} size="m" />

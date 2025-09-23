@@ -45,10 +45,10 @@ const AddCountryModal = (props) => {
 
     const sizeValid = () => {
         if (!file) return true; // support no image
-        
+
         let fileSize = ((file.size/1024)/1024).toFixed(4); // file size in MB
         
-        if(fileSize > 0.05) {
+        if(fileSize > 2) {
             return false;
         }
 
@@ -60,6 +60,7 @@ const AddCountryModal = (props) => {
         setError('');
         if(nameValid()) {
             if(sizeValid()) {
+                // !!! note: Base64 flag code exists only for legacy support 
                 let flag_base = flag;
                 if(!flag_base) {
                     flag_base = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
@@ -80,7 +81,7 @@ const AddCountryModal = (props) => {
                 setFile(null);
                 props.visibleFn(false);
             } else {
-                setError('File size is too large');
+                setError('File size is too large (2MB limit)');
                 setLoading(false);
             }
         } else {
@@ -126,7 +127,7 @@ const AddCountryModal = (props) => {
                     <div className='modal-input-group'>
                         <h4>Upload Flag</h4>
                         <p className='max-size'>
-                            Flags with resolutions up to 200x200 are currently supported.
+                            Please make sure the flag is under 2 MB in size.
                         </p>
                         <div className='file-upload-bay'>
                             <input type='file' accept="image/png, image/jpeg" id="file" className='file-input' onChange={e=>handleFileUpload(e)} />
