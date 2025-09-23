@@ -215,6 +215,24 @@ const Preferences = () => {
 		setIsAddingCountry(true);
 	}
 
+	async function uploadCountryImage(countryName, imageFile) {
+		try {
+			const formData = new FormData();
+			formData.append('image', imageFile); 
+			const response = await 
+				axios.post(`${API_URL}/committee/${userData.committee_id}/country/${countryName}`, formData, {
+						headers: {
+								"Content-Type": "application/json",
+								"auth-token": currentUser,
+						},
+				});
+			return response.data.downloadURL;
+		} catch (error) {
+			console.error('Upload failed:', error.response?.data || error.message);
+			throw error;
+		}
+	};
+
 	function handleSubmitCustomCountry(country) {
 		let newCountries = committeeCountries;
 
@@ -342,7 +360,7 @@ const Preferences = () => {
 		for (let i = 0; i < committeeCountries.length; i++) {
 			let country = committeeCountries[i];
 			displayArrStatistics.push(
-				<div className="del-stat-item">
+				<div key={`stat-item-${country._id}`} className="del-stat-item">
 					<div className="del-stat-name">{country.name}</div>
 					<div className="del-stat-bar">
 						{country.stats_primary ? (
@@ -430,7 +448,7 @@ const Preferences = () => {
 												<div className="country-list-actions">
 													<button
 														className="deselect-all"
-														onClick={(e) => clearSelected()}
+														onClick={() => clearSelected()}
 													>
 														Deselect All
 													</button>
@@ -572,9 +590,7 @@ const Preferences = () => {
 						countries={availableUNCountries}
 						submit={handleSubmitUNCountries}
 					/>
-				) : (
-					""
-				)}
+				) : <></>}
 				{isAddingCountry ? (
 					<AddCustomModal
 						visible={isAddingCountry}
@@ -582,10 +598,9 @@ const Preferences = () => {
 						stockCountries={countries}
 						committeeCountries={committeeCountries}
 						submit={handleSubmitCustomCountry}
+						upload={uploadCountryImage}
 					/>
-				) : (
-					""
-				)}
+				) : <></>}
 			</div>
 		)
 	);
