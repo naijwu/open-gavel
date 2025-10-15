@@ -1,11 +1,14 @@
 # OpenGavel
 
-OpenGavel is a free chairing program for Model UN conferences. v1 is finished -- only Presentation mode requires more work.
+OpenGavel is a free chairing program for Model UN conferences. Only think left unfinished is the Presentation mode
 
-Node back-end is on a separate repo (open-gavel-server)
+Link: [https://opengavel.app](https://opengavel.app)
 
-Link: https://opengavel.app
+Backend repo: [open-gavel-server](https://github.com/naijwu/open-gavel-server)
+
 
 ### Developing
-
-Run `npm install` and then `npm start`
+```
+npm install
+npm start
+```
